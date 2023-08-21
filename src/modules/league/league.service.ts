@@ -6,11 +6,12 @@ import { UserService } from '../user/user.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../user/entities/user.entity';
 import { Repository } from 'typeorm';
+import { LeagueRpository } from './repository/league.repository';
 
 @Injectable()
 export class LeagueService {
   constructor(@InjectRepository(League)
-              private leagueRepository: Repository<League>
+              private leagueRepository:LeagueRpository
   ){}
 
   async create(leagueDto : CreateLeagueDto, createdBy: User ):Promise<League>{
@@ -47,6 +48,17 @@ export class LeagueService {
 
   async getTotalRecords(): Promise<number> {
     return this.leagueRepository.count();
+  }
+
+
+
+  async standingsLeague(id: number):Promise<League>{
+    const queryBuilder = this.leagueRepository.createQueryBuilder('league')
+      .leftJoinAndSelect('league.teams', 'teams')
+      .where('league.id = :id', { id })
+      .orderBy('score')
+      .getOne();
+   return queryBuilder;
   }
 
   

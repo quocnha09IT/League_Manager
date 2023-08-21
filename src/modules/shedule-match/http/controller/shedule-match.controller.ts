@@ -1,8 +1,8 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Put, Query } from '@nestjs/common';
-import { SheduleMatchService } from './shedule-match.service';
-import { CreateSheduleMatchDto } from './dto/create-shedule-match.dto';
-import { UpdateSheduleMatchDto } from './dto/update-shedule-match.dto';
-import { SheduleMatch } from './entities/shedule-match.entity';
+import { SheduleMatchService } from '../../shedule-match.service';
+import { CreateSheduleMatchDto } from '../../dto/create-shedule-match.dto';
+import { UpdateSheduleMatchDto } from '../../dto/update-shedule-match.dto';
+import { SheduleMatch } from '../../entities/shedule-match.entity';
 import { query } from 'express';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Roles } from 'src/decorator/roles.decorator';
@@ -70,7 +70,7 @@ export class SheduleMatchController {
     status: 403,
     description: 'Fobiden....'
   })
-  create(@Body() shedule:SheduleMatch) {
+  create(@Body() shedule:CreateSheduleMatchDto) {
     return this.sheduleMatchService.create(shedule);
   }
 
@@ -167,16 +167,16 @@ export class SheduleMatchController {
     status: 403,
     description: 'Fobiden....'
   })
-  update(@Param('id') id: string, @Body() updateSheduleMatchDto: UpdateSheduleMatchDto) {
-    return this.sheduleMatchService.update(+id, updateSheduleMatchDto);
+  update(@Param('id') id: string, @Body() createSheduleMatchDto: CreateSheduleMatchDto) {
+    return this.sheduleMatchService.update(+id, createSheduleMatchDto);
   }
 
 
 
 
   @Put('addTeamPlay/:id')
-  @ApiBearerAuth('Bearer')
-  @Roles( Role.MANAGE_LEAGUE)
+  // @ApiBearerAuth('Bearer')
+  // @Roles( Role.MANAGE_LEAGUE)
   @ApiOperation({summary: 'update shedule match'})
   @ApiParam({
     name: 'id',
@@ -211,7 +211,7 @@ export class SheduleMatchController {
     status: 403,
     description: 'Fobiden....'
   })
-  addTeamPlay(@Param('id') id: number,@Body() teamPlay: Partial<SheduleMatch>){
+  addTeamPlay(@Param('id') id: number,@Body() teamPlay: Partial<CreateSheduleMatchDto>){
      return this.sheduleMatchService.addTeamPlay(id, teamPlay);
   }
 
@@ -279,7 +279,7 @@ export class SheduleMatchController {
     status: 403,
     description: 'Fobiden....'
   })
-async enterGoal(@Param('id') id :number,@Body() goal: Partial<SheduleMatch>){
+async enterGoal(@Param('id') id :number,@Body() goal: Partial<CreateSheduleMatchDto>){
  return this.sheduleMatchService.enterGoal(id,goal)
 }
 }

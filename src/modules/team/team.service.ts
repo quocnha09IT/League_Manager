@@ -6,11 +6,12 @@ import { Team } from './entities/team.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Player } from '../player/entities/player.entity';
+import { TeamRepository } from './repository/team.repository';
 
 @Injectable()
 export class TeamService {
   constructor(@InjectRepository(Team)
-  private teamRepository: Repository<Team>
+  private teamRepository: TeamRepository
 ){}
  async create(createTeamDto: CreateTeamDto,createdBy: User): Promise<Team> {
     const team = new Team();
@@ -24,6 +25,7 @@ export class TeamService {
   async findAll() {
     const queryBuilder = this.teamRepository.createQueryBuilder('team')
       .leftJoinAndSelect('team.players', 'players')
+      .orderBy('score')
       .getMany()
     return queryBuilder;
   }
@@ -35,6 +37,15 @@ export class TeamService {
       .getOne();
 
     return queryBuilder;
+  }
+
+
+  async findTeamId(teamId : number){
+    const team =   await this.teamRepository.findOneBy({
+      id : teamId
+    })
+      return team;
+      
   }
 
 }

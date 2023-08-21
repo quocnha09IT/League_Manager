@@ -1,12 +1,12 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
-import { TeamService } from './team.service';
-import { CreateTeamDto } from './dto/create-team.dto';
-import { UpdateTeamDto } from './dto/update-team.dto';
+import { TeamService } from '../../team.service';
+import { CreateTeamDto } from '../../dto/create-team.dto';
+import { UpdateTeamDto } from '../../dto/update-team.dto';
 import { Roles, User } from 'src/decorator/roles.decorator';
 import { Role } from 'src/common/role.enum';
 import { RolesGuard } from 'src/auth/guards.roles';
-import { Team } from './entities/team.entity';
-import { Player } from '../player/entities/player.entity';
+import { Team } from '../../entities/team.entity';
+import { Player } from '../../../player/entities/player.entity';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @Controller('teams')

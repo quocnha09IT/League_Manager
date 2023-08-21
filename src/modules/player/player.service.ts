@@ -3,22 +3,25 @@ import { CreatePlayerDto } from './dto/create-player.dto';
 import { UpdatePlayerDto } from './dto/update-player.dto';
 import { Player } from './entities/player.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, getConnection } from 'typeorm';
+import { Repository,  } from 'typeorm';
 import { Team } from '../team/entities/team.entity';
+import { PlayerRepository } from './repository/play.repository';
+import { TeamService } from '../team/team.service';
+import { te } from 'date-fns/locale';
 
 @Injectable()
 export class PlayerService {
   constructor(@InjectRepository(Player)
-  private playerRepository: Repository<Player>,
-  @InjectRepository(Team)
-  private teamRepository: Repository<Team>,){}
+              private playerRepository: PlayerRepository,
+              private teamService : TeamService
+  ){}
   
-  async create(@Body()player:Player ):Promise<Player>{
-    await this.playerRepository.insert(player);
-    return player;
+  async create(createPlayDto:CreatePlayerDto ):Promise<CreatePlayerDto>{
+    await this.playerRepository.insert(createPlayDto);
+    return createPlayDto;
   }
 
-  async findAll(): Promise<Player[]> {
+  async findAll(): Promise<CreatePlayerDto[]> {
     return this.playerRepository.find();
   }
 
@@ -27,7 +30,7 @@ export class PlayerService {
     return existingManage;
   }
  
-  async update(id: number, updateData: Partial<Player>): Promise<Player> {
+  async update(id: number, updateData: Partial<CreatePlayerDto>): Promise<Player> {
     const existingManage = await this.playerRepository.findOneBy({id});
     if (!existingManage) {
       
@@ -36,18 +39,18 @@ export class PlayerService {
     return this.playerRepository.save(existingManage);
   }
 
-  async assignPlayerToTeam(teamId: Partial<Player>, id: number) {
-      
-    const player = await this.playerRepository.query(`SELECT * FROM player WHERE id = ${id}`);
+  async assignPlayerToTeam(teamId: number, id: number) {
+
+    const player = await this.playerRepository.find({where:{id}})
     if (!player) {
-      throw new Error('Player not found');
+      console.log('do have not player')
      }
     
-    const team = await this.teamRepository.query(`SELECT * FROM team  WHERE id = ${teamId}`);
-    if (!team) {
-      throw new Error('Team not found');
+    const team = await this.teamService.findTeamId(teamId);
+    if(team == null){
+      return 'do not have team';
     }
-    await this.playerRepository.query(`UPDATE player SET "teamId" = ${teamId}  WHERE id = ${id}`);
+     await this.playerRepository.update(id ,  { team: { id: teamId } })
     
   }
 }

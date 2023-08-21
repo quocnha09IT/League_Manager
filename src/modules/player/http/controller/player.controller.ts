@@ -1,11 +1,12 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete ,Put, Query} from '@nestjs/common';
-import { PlayerService } from './player.service';
-import { CreatePlayerDto } from './dto/create-player.dto';
-import { UpdatePlayerDto } from './dto/update-player.dto';
+import { PlayerService } from '../../player.service';
+import { CreatePlayerDto } from '../../dto/create-player.dto';
+import { UpdatePlayerDto } from '../../dto/update-player.dto';
 import { Role } from 'src/common/role.enum';
 import { Roles, player } from 'src/decorator/roles.decorator';
-import { Player } from './entities/player.entity';
+import { Player } from '../../entities/player.entity';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Int32 } from 'typeorm';
 
 @Controller('players')
 @ApiTags('Player')
@@ -75,7 +76,7 @@ export class PlayerController {
     status: 403,
     description: 'Fobiden....'
   })
-  async create(@Body() player: Player) {
+  async create(@Body() player: CreatePlayerDto) {
     return this.playerService.create(player);
   }
 
@@ -98,7 +99,7 @@ export class PlayerController {
     status: 500,
     description: 'Internal server error....'
   })
-  async findAll(): Promise<Player[]> {
+  async findAll(): Promise<CreatePlayerDto[]> {
     return this.playerService.findAll();
   }
 
@@ -116,7 +117,7 @@ export class PlayerController {
   })
   @ApiResponse({
     status: 201,
-    description: 'delete successfully....'
+    description: 'delete successfully....',
   })
   @ApiResponse({
     status: 403,
@@ -197,7 +198,7 @@ export class PlayerController {
     status: 403,
     description: 'Fobiden....'
   })
-  async update(@Param('id') id: number, @Body() updateData: Partial<Player>): Promise<Player> {
+  async update(@Param('id') id: number, @Body() updateData: Partial<CreatePlayerDto>): Promise<CreatePlayerDto> {
     return this.playerService.update(id, updateData);
   }
 
@@ -233,8 +234,8 @@ export class PlayerController {
     status: 403,
     description: 'Fobiden....'
   })
-  async assignPlayerToTeam(@Param('id') id : number ,@Body('teamId') teamId: Partial<Player>) {
+  async assignPlayerToTeam(@Param('id') id : number ,@Body('teamId') teamId: number) {
     await this.playerService.assignPlayerToTeam(teamId, id);
-    return { message: 'Player assigned to team successfully' };
+    return 'Player assigned to team successfully';
   }
 }

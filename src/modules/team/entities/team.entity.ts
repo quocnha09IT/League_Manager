@@ -15,6 +15,19 @@ export class Team {
 
     @Column()
     logoTeam: String    
+
+    @Column({default: null})
+    score: number
+
+    @Column()
+    numberGoal: number
+
+    @Column()
+    concededGoal: number
+
+    @Column()
+    goalPerformance: number
+
    
     @ManyToMany(() => SheduleMatch,sheduleMatch => sheduleMatch.homeTeam)
     homeTeams: SheduleMatch[]

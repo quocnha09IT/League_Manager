@@ -16,7 +16,7 @@ services:
     links:
     - postgres:postgres
     container_name: pgadmin
-    image: dpage/pgadmin3
+    image: dpage/pgadmin4
     ports:
     - "5432:5432"
     volumes:

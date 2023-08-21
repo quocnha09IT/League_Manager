@@ -36,6 +36,7 @@ export class AuthController {
         status: 403,
         description: 'Fobiden....'
       })
+    @ApiBearerAuth()
     signIn(@Body() signInDto: Record<string,any>){
         return this.authService.signIn(signInDto.email, signInDto.password);
     }

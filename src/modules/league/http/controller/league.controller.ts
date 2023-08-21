@@ -1,9 +1,9 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Put ,Req, Query} from '@nestjs/common';
-import { LeagueService } from './league.service';
-import { CreateLeagueDto } from './dto/create-league.dto';
-import { UpdateLeagueDto } from './dto/update-league.dto';
-import { UserService } from '../user/user.service';
-import { League } from './entities/league.entity';
+import { LeagueService } from '../../league.service';
+import { CreateLeagueDto } from '../../dto/create-league.dto';
+import { UpdateLeagueDto } from '../../dto/update-league.dto';
+import { UserService } from '../../../user/user.service';
+import { League } from '../../entities/league.entity';
 import { Role } from 'src/common/role.enum';
 import { Roles, User } from 'src/decorator/roles.decorator';
 import { from } from 'rxjs';
@@ -36,7 +36,7 @@ export class LeagueController {
           description: 'this is the name sport of league',
         },
 
-        are:{
+        area:{
           type: 'string',
           example: 'English',
           description: 'this is the are of league',
@@ -59,8 +59,8 @@ export class LeagueController {
     status: 403,
     description: 'Fobiden....'
   })
-  async create(@Body() league: League, @User() user) {
-    return this.leagueService.create(league,user);
+  async create(@Body() createLeagueDte: CreateLeagueDto, @User() user) {
+    return this.leagueService.create(createLeagueDte,user);
   }
 
 
@@ -116,7 +116,7 @@ export class LeagueController {
     status: 403,
     description: 'Fobiden....'
   })
-  async update(@Param('id') id: number, @Body() updateData: Partial<League>): Promise<League> {
+  async update(@Param('id') id: number, @Body() updateData: Partial<CreateLeagueDto>): Promise<CreateLeagueDto> {
     return this.leagueService.update(id, updateData);
   }
 
@@ -183,6 +183,15 @@ export class LeagueController {
       perPage:limit,
       data: leagues,
     };
+  }
+
+
+
+
+  @Get('standings/:id')
+  async standingsLeague(@Param('id') id : number){
+   return this.leagueService.standingsLeague(id);
+
   }
 
 

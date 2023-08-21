@@ -20,6 +20,9 @@ export class SheduleMatch {
     goalHome:number
 
     @Column({default: null})
+    isProcessed : boolean
+    
+    @Column({default: null})
     goalAway:number 
 
     @ManyToOne(() => Team, team => team.homeTeams)
@@ -28,6 +31,5 @@ export class SheduleMatch {
     @ManyToOne(() => Team , team => team.awayTeams)
     awayTeam: Team
     
-   
 
 }
