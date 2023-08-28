@@ -1,21 +1,21 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { SheduleMatch } from './entities/shedule-match.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { response } from 'express';
 import { Shedule_matchRepositoty } from './repository/shedule_match.repository';
 import { CreateSheduleMatchDto } from './dto/create-shedule-match.dto';
+import { TeamService } from '../team/team.service';
 
 
 @Injectable()
 export class SheduleMatchService {
-  query(arg0: string) {
-    throw new Error('Method not implemented.');
-  }
   constructor(@InjectRepository(SheduleMatch)
-  private sheduleRepository: Shedule_matchRepositoty){}
+  private sheduleRepository: Shedule_matchRepositoty,
+  private teamServide: TeamService,
+  ){}
 
-async create(shedule:CreateSheduleMatchDto):Promise<SheduleMatch> {
+create(shedule:CreateSheduleMatchDto):Promise<SheduleMatch> {
     return this.sheduleRepository.save(shedule);
     
   }
@@ -50,55 +50,78 @@ async update(id: number, updateData: Partial<CreateSheduleMatchDto>): Promise<Sh
 
 
 async addTeamPlay(id:number,teamPlay:Partial<CreateSheduleMatchDto>){
-    const existingManage = await this.sheduleRepository.findOneBy({id});
     
-    if (!existingManage) {    
-    }  
     const homeTeam = (teamPlay as any).homeTeamId;
     const awayTeam = (teamPlay as any).awayTeamId;
-    if(homeTeam == awayTeam ){
-      response.statusMessage = "The two teams can be the same"
-    }
+    if(homeTeam === awayTeam ){
     
-    const checkTime = await this.sheduleRepository.query(`SELECT "homeTeamId" , "awayTeamId","date"  FROM shedule_match `);
-    
-    const check = await this.sheduleRepository.query(`SELECT "homeTeamId" , "awayTeamId","date"  FROM shedule_match WHERE "id" = ${id}  `);
+      throw new HttpException('the two team can not be the same!!!!!!!!!', HttpStatus.FORBIDDEN);
+    }else
+      {
 
-
-      const date = checkTime[0].date;
-      const homeTeamPlay = checkTime[0].homeTeamId;
-      const awayTeamPlay = checkTime[0].awayTeamId;
+      // get the date the user id input
+      const check = await this.sheduleRepository.findBy({id});
       const datePlay = check[0].date;
-      const areEqual = date.getTime() === datePlay.getTime();
-      const checkHomeLeague = await this.sheduleRepository.query(`SELECT "leagueId"   FROM team WHERE "id" = ${homeTeam}  `);
-      const checkAwayLeague = await this.sheduleRepository.query(`SELECT "leagueId"   FROM team WHERE "id" = ${awayTeam}  `);
-      const CheckHomeLeague = checkHomeLeague[0].leagueId;
-      const CheckAwayLeague = checkAwayLeague[0].leagueId;
+    
+      const [match,count] = await this.sheduleRepository.findAndCount({ where: {date : datePlay  } });
+      const homeTeamIds = match.map(match => match.homeTeamId);
+      const awayTeamIds = match.map(match => match.awayTeamId);
 
+      const homeTeamIdsArray = homeTeamIds.filter(id => id !== null);
+      const awayTeamIdsArray = awayTeamIds.filter(id => id !== null);
+      
+      const targetValues = [homeTeam, awayTeam];
 
-      if(CheckHomeLeague === CheckAwayLeague ){
-        if(areEqual){
-          if(homeTeam == homeTeamPlay || awayTeam == awayTeamPlay || homeTeam == awayTeamPlay || awayTeam ==  homeTeamPlay){
-            response.statusMessage = "the team has a shedule";
+      const uniqueHomeTeamIds = homeTeamIdsArray.find(id => targetValues.includes(id));
+      const uniqueAwayTeamIds = awayTeamIdsArray.find(id => targetValues.includes(id));
+      
+      const shedule = await this.sheduleRepository.findOne({where:{id}})
+      const sheduleMatchhHome = shedule.homeTeamId
+      const sheduleMatchhAway = shedule.awayTeamId
+
+      const checkLeagueHome = await this.teamServide.findLeague(sheduleMatchhHome);
+      const checkLeagueAway = await this.teamServide.findLeague(sheduleMatchhAway);
+      
+      
+        if(checkLeagueAway === checkLeagueHome){
+
+      
+          if(count >= 2){
+            if(uniqueAwayTeamIds == undefined && uniqueHomeTeamIds == undefined){
+                  
+              await this.sheduleRepository
+                .createQueryBuilder()
+                .update('shedule_match')
+                .set({
+                  homeTeamId: homeTeam,
+                  awayTeamId: awayTeam,
+                  leagueId: checkLeagueAway
+                  })
+                .where("id =:id",{id: id})
+                .execute()
+
+            }
+            else{
+                throw new HttpException('this is team has been shedule macth!!!!!', HttpStatus.FORBIDDEN);
+                }
           }else{
-             await this.sheduleRepository.query( `UPDATE shedule_match SET "homeTeamId" = $1, "awayTeamId" = $2 WHERE id = $3`,
-                [homeTeam, awayTeam, id]);
+            await this.sheduleRepository
+              .createQueryBuilder()
+              .update('shedule_match')
+              .set({
+                homeTeamId: homeTeam,
+                awayTeamId: awayTeam,
+                leagueId: checkLeagueAway
+               })
+              .where("id =:id",{id: id})
+              .execute()
           }
-        } 
-        else{  
-            await this.sheduleRepository.query( `UPDATE shedule_match SET "homeTeamId" = $1, "awayTeamId" = $2 WHERE id = $3`,
-                [homeTeam, awayTeam, id]);
-        }
-
       }
       else{
-         console.log('the two team must be the same!!!!!')
+        throw new HttpException('the two team different league!!!!!', HttpStatus.FORBIDDEN);
       }
-      
-
-    
-   
-     
+    }
+  
    }
 
 
@@ -111,36 +134,126 @@ async remove(id:number){
 
 
 
-async enterGoal(id: number , goal : Partial<CreateSheduleMatchDto>){
-  const a = await this.sheduleRepository.query(`SELECT * FROM shedule_match WHERE id = ${id}`)
 
+
+
+
+async enterGoal(id: number , goal : Partial<CreateSheduleMatchDto>){
+  const a = await this.sheduleRepository.findBy({id})
 
   if(a[0].isProcessed != true){
 
-   await this.sheduleRepository.query(`UPDATE shedule_match SET "goalAway" = $1, "goalHome" = $2, "isProcessed" = true   WHERE id = $3`,
-    [goal.goalAway, goal.goalHome, id])  
+  // inser score home team and away team
 
-  // score of team
-  
-  const b = await this.sheduleRepository.query(`SELECT * FROM team WHERE id = ${a[0].awayTeamId}`)
-  
-    if(goal.goalAway > goal.goalHome){
-    await this.sheduleRepository.query(`UPDATE team SET "score" = ${b[0].score + 3}, "numberGoal" = ${b[0].numberGoal + goal.goalAway},"concededGoal" = ${b[0].concededGoal + goal.goalHome}  WHERE id = ${a[0].awayTeamId}`)
-    await this.sheduleRepository.query(`UPDATE team SET  "numberGoal" = ${b[0].numberGoal + goal.goalHome},"concededGoal" = ${b[0].concededGoal + goal.goalAway}  WHERE id = ${a[0].homeTeamId}`)
+await this.sheduleRepository
+    .createQueryBuilder()
+    .update('shedule_match')
+    .set({
+      goalAway: goal.goalAway,
+      goalHome: goal.goalHome,
+      isProcessed: true
+      })
+    .where("id =:id",{id: id})
+    .execute()
+
+  // calculate score of team
+const findTeam = await this.teamServide.findTeam(a[0].awayTeamId);
+
+// if  away team win
+  if(goal.goalAway > goal.goalHome){
+    // update score , number goal , conceded goal team win
+await this.sheduleRepository
+      .createQueryBuilder()
+      .update('team')
+      .set({
+        score: findTeam[0].score + 3,
+        numberGoal: findTeam[0].numberGoal + goal.goalAway,
+        concededGoal: findTeam[0].concededGoal + goal.goalHome,
+        matchPlayed: findTeam[0].matchPlayed + 1
+      })
+      .where("id=:id", {  id: a[0].awayTeamId})
+      .execute()
+
+    // update score , number goal , conceded goal team lose
+
+await this.sheduleRepository
+    .createQueryBuilder()
+    .update('team')
+    .set({
+      score: findTeam[0].score + 0,
+      numberGoal: findTeam[0].numberGoal + goal.goalHome,
+      concededGoal: findTeam[0].concededGoal + goal.goalAway,
+      matchPlayed: findTeam[0].matchPlayed + 1
+    })
+    .where("id=:id", {  id: a[0].homeTeamId})
+    .execute()
+
   }
+  // if home team win
   else if(goal.goalAway < goal.goalHome){
-     await this.sheduleRepository.query(`UPDATE team SET "score" = ${b[0].score + 3}, "numberGoal" = ${b[0].numberGoal + goal.goalHome},"concededGoal" = ${b[0].concededGoal + goal.goalAway}  WHERE id = ${a[0].homeTeamId}`)
-     await this.sheduleRepository.query(`UPDATE team SET  "numberGoal" = ${b[0].numberGoal + goal.goalAway},"concededGoal" = ${b[0].concededGoal + goal.goalHome}  WHERE id = ${a[0].awayTeamId}`)
-    }
-  else if(goal.goalAway === goal.goalHome){
-    await this.sheduleRepository.query(`UPDATE team SET "score" = ${b[0].score + 1},"numberGoal" = ${b[0].numberGoal + goal.goalAway},"concededGoal" = ${b[0].concededGoal + goal.goalHome}  WHERE id = ${a[0].homeTeamId}`)
-    await this.sheduleRepository.query(`UPDATE team SET "score" = ${b[0].score + 1}, "numberGoal" = ${b[0].numberGoal + goal.goalHome},"concededGoal" = ${b[0].concededGoal + goal.goalAway} WHERE id = ${a[0].awayTeamId}`)
-  }
+// update score , number goal , conceded goal team win
+  await this.sheduleRepository
+     .createQueryBuilder()
+     .update('team')
+     .set({
+       score: findTeam[0].score + 3,
+       numberGoal: findTeam[0].numberGoal + goal.goalHome,
+       concededGoal: findTeam[0].concededGoal + goal.goalAway,
+       matchPlayed: findTeam[0].matchPlayed + 1
+     })
+     .where("id=:id", {  id: a[0].homeTeamId})
+     .execute()
 
-  return response.statusMessage= 'enter goal successfully..... ';
+// update score , number goal , conceded goal team lose
+  await this.sheduleRepository
+    .createQueryBuilder()
+    .update('team')
+    .set({
+      score: findTeam[0].score + 0,
+      numberGoal: findTeam[0].numberGoal + goal.goalAway,
+      concededGoal: findTeam[0].concededGoal + goal.goalHome,
+      matchPlayed: findTeam[0].matchPlayed + 1
+    })
+    .where("id=:id", {  id: a[0].awayTeamId})
+    .execute()
+    }
+
+// if two team draw
+  else if(goal.goalAway === goal.goalHome){
+
+// update score , number goal , conceded goal team draw
+     await this.sheduleRepository
+     .createQueryBuilder()
+     .update('team')
+     .set({
+       score: findTeam[0].score + 1,
+       numberGoal: findTeam[0].numberGoal + goal.goalAway,
+       concededGoal: findTeam[0].concededGoal + goal.goalHome,
+       matchPlayed: findTeam[0].matchPlayed + 1
+     })
+     .where("id=:id", {  id: a[0].homeTeamId})
+     .execute()
+
+    
+// update score , number goal , conceded goal team draw
+    await this.sheduleRepository
+     .createQueryBuilder()
+     .update('team')
+     .set({
+       score: findTeam[0].score + 1,
+       numberGoal: findTeam[0].numberGoal + goal.goalHome,
+       concededGoal: findTeam[0].concededGoal + goal.goalAway,
+       matchPlayed: findTeam[0].matchPlayed + 1
+     })
+     .where("id=:id", {  id: a[0].awayTeamId})
+     .execute()
+
+  }
+      throw new HttpException('enter goal successfully!!!!!', HttpStatus.FORBIDDEN);
     }
     else {
-      response.statusMessage = "this match has been update";
+      
+      throw new HttpException('this match has been update!!!!!', HttpStatus.FORBIDDEN);
     }
   }
 }

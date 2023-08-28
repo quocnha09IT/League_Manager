@@ -13,14 +13,14 @@ export class TeamService {
   constructor(@InjectRepository(Team)
   private teamRepository: TeamRepository
 ){}
- async create(createTeamDto: CreateTeamDto,createdBy: User): Promise<Team> {
-    const team = new Team();
-    team.nameTeam = createTeamDto.nameTeam;
-    team.logoTeam = createTeamDto.logoTeam;
-    team.createdBy =createdBy;
-    await this.teamRepository.insert(team);
-    return team;
-  }
+//  async create(createTeamDto: CreateTeamDto,createdBy: User): Promise<Team> {
+//     const team = new Team();
+//     team.nameTeam = createTeamDto.nameTeam;
+//     team.logoTeam = createTeamDto.logoTeam;
+//     team.createdBy =createdBy;
+//     await this.teamRepository.insert(team);
+//     return team;
+//   }
 
   async findAll() {
     const queryBuilder = this.teamRepository.createQueryBuilder('team')
@@ -47,5 +47,16 @@ export class TeamService {
       return team;
       
   }
+
+
+  async findTeam(id : number){
+    return await this.teamRepository.findBy({id})
+  }
+
+
+  async findLeague(id: number){
+    return this.teamRepository.findOne({where:{id}});
+  }
+
 
 }

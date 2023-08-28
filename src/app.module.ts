@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule, ValidationPipe } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './modules/user/user.module';
@@ -19,14 +19,21 @@ import { User } from './modules/user/entities/user.entity';
 import { AuthModule } from './auth/auth.module';
 import { dataSourceoptions } from 'db/data-source';
 import { AuthSwaggerMiddleware } from './auth/authSwager.middleware';
+import { CommentModule } from './modules/comment/comment.module';
+import { APP_PIPE } from '@nestjs/core';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot(dataSourceoptions),
     TypeOrmModule.forFeature([SheduleMatch]),
-    AuthModule,UserModule, SheduleMatchModule, PlayerModule, LeagueModule, SportModule, TeamModule, AuthModule],
+    AuthModule,UserModule, SheduleMatchModule, PlayerModule, LeagueModule, SportModule, TeamModule, AuthModule,CommentModule],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService,
+    {
+      provide: APP_PIPE,
+  useClass: ValidationPipe,
+  }
+  ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

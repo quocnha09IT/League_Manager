@@ -30,7 +30,9 @@ export class AppService {
   
 
    async getShedule(date: string){
-    const query = `SELECT * FROM shedule_match WHERE "date" = '${date}'`;
+    const query = `SELECT * FROM shedule_match WHERE 
+    EXTRACT(MONTH FROM "date") = EXTRACT(MONTH FROM '${date}'::DATE) AND
+    EXTRACT(DAY FROM "date") = EXTRACT(DAY FROM '${date}'::DATE);`;
     const scheduleMatch = await this.sheduleRepository.query(query);
     return scheduleMatch;
    }

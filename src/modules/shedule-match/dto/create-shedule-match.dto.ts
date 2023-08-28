@@ -9,4 +9,5 @@ export class CreateSheduleMatchDto {
     goalAway?:number;
     homeTeamId?:number;
     awayTeamId?:number;
+    matchPlayed?:number;
 }

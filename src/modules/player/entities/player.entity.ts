@@ -33,6 +33,9 @@ export class Player {
     @Column()
     weight: number
 
+    @Column()
+    numberGoal: number
+
     @ManyToOne(() =>User, (user) => user.players)
     user: User
 

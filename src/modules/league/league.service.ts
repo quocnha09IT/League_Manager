@@ -21,8 +21,9 @@ export class LeagueService {
      league.level = leagueDto.level;
      league.sport = leagueDto.sport;
      league.createdBy = createdBy;
-    await this.leagueRepository.insert(league);
-    return league;
+   const a =  await this.leagueRepository.save(league);
+   console.log(a)
+    return 
   }
 
   async update(id: number, updateData: Partial<League>): Promise<League> {
@@ -60,6 +61,11 @@ export class LeagueService {
       .getOne();
    return queryBuilder;
   }
+
+  
+  GetMatchOfLeague(){
+    return this.leagueRepository.find({relations: {sheduleMatchs: true}})
+   }
 
   
 }

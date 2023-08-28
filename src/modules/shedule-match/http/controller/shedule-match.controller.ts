@@ -175,8 +175,8 @@ export class SheduleMatchController {
 
 
   @Put('addTeamPlay/:id')
-  // @ApiBearerAuth('Bearer')
-  // @Roles( Role.MANAGE_LEAGUE)
+  @ApiBearerAuth('Bearer')
+  @Roles( Role.MANAGE_LEAGUE)
   @ApiOperation({summary: 'update shedule match'})
   @ApiParam({
     name: 'id',

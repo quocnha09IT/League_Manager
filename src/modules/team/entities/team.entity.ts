@@ -28,12 +28,20 @@ export class Team {
     @Column()
     goalPerformance: number
 
+    @Column()
+    leagueId: number
+
+    @Column()
+    matchPlayed: number
+
    
-    @ManyToMany(() => SheduleMatch,sheduleMatch => sheduleMatch.homeTeam)
+
+   
+    @OneToMany(() => SheduleMatch,sheduleMatch => sheduleMatch.homeTeamId)
     homeTeams: SheduleMatch[]
 
-    @ManyToMany(() => SheduleMatch,sheduleMatch => sheduleMatch.awayTeam)
-    awayTeams: SheduleMatch[]
+    // @OneToMany(() => SheduleMatch,sheduleMatch => sheduleMatch.awayTeam)
+    // awayTeams: SheduleMatch[]
 
     @ManyToOne(() => User, user => user.team)
     createdBy: User;

@@ -35,7 +35,7 @@ export class AppController {
   @ApiParam({
     name: 'date',
     type: 'string',
-    description: 'enter date',
+    description: 'enter date in the format YYYY-MM-DD',
     required: true
   })
   @ApiResponse({

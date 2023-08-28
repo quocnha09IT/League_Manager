@@ -123,6 +123,28 @@ export class LeagueController {
 
 
 
+  @ApiOperation({summary:'get match of league'})
+  @ApiResponse({
+    status: 201,
+    description: 'successfully....'
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Fobiden....'
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Internal server error....'
+  })
+  @Get('matchOfLeague')
+     GetMatchOfLeague(){
+      return this.leagueService.GetMatchOfLeague();
+    }
+  
+
+
+
+
 
 
   @Roles(Role.MANAGE_LEAGUE,Role.USER)
@@ -193,8 +215,6 @@ export class LeagueController {
    return this.leagueService.standingsLeague(id);
 
   }
-
-
  
 }
 

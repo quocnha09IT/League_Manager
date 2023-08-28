@@ -44,9 +44,9 @@ export class TeamController {
     status: 403,
     description: 'Fobiden....'
   })
-  create(@Body() createTeamDto: CreateTeamDto, @User() user) {
-    return this.teamService.create(createTeamDto,user);
-  }
+  // create(@Body() createTeamDto: CreateTeamDto, @User() user) {
+  //   return this.teamService.create(createTeamDto,user);
+  // }
 
 
 
