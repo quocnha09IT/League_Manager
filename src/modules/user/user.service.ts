@@ -11,23 +11,18 @@ export class UserService {
   constructor(@InjectRepository(User)
     private userRepository:UserRepository,
   ){}
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
-  }
+ 
 
-  findAll() : Promise<User[]>{
-    return this.userRepository.find();
+  async getUser() : Promise<User[]>{
+    const user =  await this.userRepository.find({where:{roles: 'user'}});
+    return user;
   }
 
   findOne(email: any): Promise<User | undefined> {
     return this.userRepository.findOne({where:{email}});
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
-  }
+ 
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
-  }
+
 }

@@ -21,19 +21,72 @@ import { dataSourceoptions } from 'db/data-source';
 import { AuthSwaggerMiddleware } from './auth/authSwager.middleware';
 import { CommentModule } from './modules/comment/comment.module';
 import { APP_PIPE } from '@nestjs/core';
+import { StandingModule } from './modules/standing/standing.module';
+import { LeagueTeamModule } from './modules/league_team/league_team.module';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { join } from 'path';
+import { UserService } from './modules/user/user.service';
+import { SheduleMatchService } from './modules/shedule-match/shedule-match.service';
+import { TeamService } from './modules/team/team.service';
+import { StandingService } from './modules/standing/standing.service';
+import { LeagueService } from './modules/league/league.service';
+import { StandingEntity } from './modules/standing/entities/standing.entity';
+import { InfoMatchModule } from './modules/infoMatch/repository/infoMatch.module';
+import { MulterModule } from '@nestjs/platform-express';
+import { UserInfoMatchModule } from './modules/User_InfoMatch/User_InfoMatch.module';
 
 @Module({
   imports: [
+    MulterModule.register({
+      dest: './uploads'
+    }),
+    MailerModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (config: ConfigService)=> ({
+        transport: {
+          service: 'gmail',
+          port: 465,
+          host: "smtp.gmail.com",
+          secure: true,
+          auth:{
+            user: 'quocnha09@gmail.com',
+            pass: 'e icknwuxv d ey rdyg',
+          },
+        },
+        defaults: {
+          from: `"No repply to quocnha09@gmail.com"`
+        },
+        template:{
+          dir: join(__dirname,'src/templates/email'),
+          options:{
+            strict: true,
+          },
+        },
+      }),
+      inject: [ ConfigService]
+       
+    
+    }),
     TypeOrmModule.forRoot(dataSourceoptions),
-    TypeOrmModule.forFeature([SheduleMatch]),
-    AuthModule,UserModule, SheduleMatchModule, PlayerModule, LeagueModule, SportModule, TeamModule, AuthModule,CommentModule],
+    TypeOrmModule.forFeature([
+      SheduleMatch,User,Team,League,StandingEntity]),
+    AuthModule,UserModule, SheduleMatchModule, PlayerModule, LeagueModule, SportModule, 
+    TeamModule, AuthModule,CommentModule,StandingModule,LeagueTeamModule,InfoMatchModule,UserInfoMatchModule
+      ],
   controllers: [AppController],
   providers: [AppService,
-    {
+              UserService,
+              TeamService,
+              StandingService,
+              LeagueService,
+
+              
+         {
       provide: APP_PIPE,
-  useClass: ValidationPipe,
-  }
-  ],
+      useClass: ValidationPipe,
+    }
+            ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

@@ -1,6 +1,8 @@
 
+import { InfoMatch } from "src/modules/infoMatch/entities/infoMatch.entity";
 import { UserComment } from "src/modules/comment/entities/comment.entity";
 import { League } from "src/modules/league/entities/league.entity";
+import { StandingEntity } from "src/modules/standing/entities/standing.entity";
 import { Team } from "src/modules/team/entities/team.entity";
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
@@ -36,9 +38,12 @@ export class SheduleMatch {
 
     @Column()
     leagueId: number
+    
 
     @ManyToOne(() => Team, (team) => team.homeTeams)
     homeTeam: Team;
+
+    
 
     // @ManyToOne(() => Team , team => team.awayTeams)
     // awayTeam: Team
@@ -48,6 +53,13 @@ export class SheduleMatch {
 
     @OneToMany(()=> UserComment, userComment => userComment.sheduleMatch)
     userComment: UserComment[]
+
+    @OneToOne(() => StandingEntity)
+    standing: StandingEntity
+
+    // @ManyToOne(()=> InfoMatch, inforMatch => inforMatch.sheduleMatch)
+    // matchId: InfoMatch
+
     
     
 

@@ -1,4 +1,7 @@
+import { info } from "console";
 import { Role } from "src/common/role.enum";
+import { InfoMatch } from "src/modules/infoMatch/entities/infoMatch.entity";
+import { UserInfoMatch } from "src/modules/User_InfoMatch/entities/User_InfoMatch.entity";
 import { League } from "src/modules/league/entities/league.entity";
 import { Player } from "src/modules/player/entities/player.entity";
 import { Team } from "src/modules/team/entities/team.entity";
@@ -35,5 +38,11 @@ export class User {
 
     @OneToMany(() => Team, team => team.createdBy )
     team: Team
+
+    @ManyToMany(() => InfoMatch,(infoMatch) => infoMatch.users)
+    infoMatchs: InfoMatch
+
+    @OneToMany(() => UserInfoMatch, userInfoMatch => userInfoMatch.UserId)
+    userInfoMatch: UserInfoMatch[]
     
 }

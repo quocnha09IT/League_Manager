@@ -4,6 +4,8 @@ import { TeamController } from './http/controller/team.controller';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Team } from './entities/team.entity';
+import { LeagueTeam } from '../league_team/entitis/league_team.entity';
+import { LeagueTeamService } from '../league_team/league_team.service';
 
 @Module({
   controllers: [TeamController],

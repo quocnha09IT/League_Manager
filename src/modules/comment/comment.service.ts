@@ -13,7 +13,9 @@ export class CommentService{
         private commentRepository: CommentRepository,
     ){}
 
-PostComment(createComment:CreateCommentDto){
-        return this.commentRepository.save(createComment);
+PostComment(createComment:CreateCommentDto,idMatch: number){
+        createComment.sheduleMatchId = idMatch;
+        return this.commentRepository.save(createComment );
+        
     }
 }

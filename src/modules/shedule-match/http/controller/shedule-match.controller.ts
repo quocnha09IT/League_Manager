@@ -58,6 +58,11 @@ export class SheduleMatchController {
           type: 'integer',
           example: 4,
           description: 'this is the Id away team'
+        },
+        leagueId:{
+          type: 'integer',
+          example: 22,
+          description: 'this is the leauge Id two team'
         }
       }
     }
@@ -73,6 +78,10 @@ export class SheduleMatchController {
   create(@Body() shedule:CreateSheduleMatchDto) {
     return this.sheduleMatchService.create(shedule);
   }
+
+
+
+  
 
 
 
@@ -174,6 +183,35 @@ export class SheduleMatchController {
 
 
 
+  // get comment of user for match
+
+  @Get('cmt/:id')
+  @ApiOperation({summary:'get all the comment of user for match'})
+  @ApiParam({
+    name: 'id',
+    type: 'integer',
+    description: 'enter unique id',
+    required: true
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'save....'
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Fobiden....'
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Internal server error....'
+  })
+  async GetComment(@Param('id')id :number){
+    return await this.sheduleMatchService.GetComment(id);
+  }
+
+
+
+
   @Put('addTeamPlay/:id')
   @ApiBearerAuth('Bearer')
   @Roles( Role.MANAGE_LEAGUE)
@@ -243,8 +281,8 @@ export class SheduleMatchController {
 
 
 @Put('enterGoals/:id')
-@Roles( Role.MANAGE_LEAGUE,Role.USER)
-@ApiBearerAuth('Bearer')
+// @Roles( Role.MANAGE_LEAGUE,Role.USER)
+// @ApiBearerAuth('Bearer')
   @ApiOperation({summary: 'Enter goal'})
   @ApiParam({
     name: 'id',

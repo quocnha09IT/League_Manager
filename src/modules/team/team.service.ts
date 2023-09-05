@@ -4,28 +4,37 @@ import { UpdateTeamDto } from './dto/update-team.dto';
 import { User } from '../user/entities/user.entity';
 import { Team } from './entities/team.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, UpdateResult } from 'typeorm';
 import { Player } from '../player/entities/player.entity';
 import { TeamRepository } from './repository/team.repository';
+import { LeagueTeamService } from '../league_team/league_team.service';
+import { League } from '../league/entities/league.entity';
+
 
 @Injectable()
 export class TeamService {
   constructor(@InjectRepository(Team)
-  private teamRepository: TeamRepository
+  private teamRepository: TeamRepository,
 ){}
-//  async create(createTeamDto: CreateTeamDto,createdBy: User): Promise<Team> {
-//     const team = new Team();
-//     team.nameTeam = createTeamDto.nameTeam;
-//     team.logoTeam = createTeamDto.logoTeam;
-//     team.createdBy =createdBy;
-//     await this.teamRepository.insert(team);
-//     return team;
-//   }
+ async create(createTeamDto: CreateTeamDto) {
+      const league = new League()
+       league.id = createTeamDto.leagueId;
+      const team = new Team();
+      team.leagues = [league];
+      team.nameTeam = createTeamDto.nameTeam;
+       team.logoTeam = createTeamDto.logoTeam;
+       this.teamRepository.save(team);
+  }
+
+
+  async GetTeam(){
+    return await this.teamRepository.find()
+  }
 
   async findAll() {
     const queryBuilder = this.teamRepository.createQueryBuilder('team')
       .leftJoinAndSelect('team.players', 'players')
-      .orderBy('score')
+      // .orderBy('score')
       .getMany()
     return queryBuilder;
   }
@@ -56,6 +65,21 @@ export class TeamService {
 
   async findLeague(id: number){
     return this.teamRepository.findOne({where:{id}});
+  }
+
+
+  async getLeagueOfTeam(id : number){
+    return this.teamRepository.find({
+      relations:{ leagues: true},
+      where :{
+        id :id 
+      }
+    })
+  }
+
+  async updateLogo(logoTeam:string, id : number): Promise<UpdateResult>{
+    return await this.teamRepository.update(id,{logoTeam});
+
   }
 
 

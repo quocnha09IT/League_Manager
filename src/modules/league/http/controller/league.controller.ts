@@ -170,7 +170,29 @@ export class LeagueController {
   }
   
 
-
+  @Get(':id')
+  @ApiOperation({summary:'get team of league'})
+  @ApiParam({
+    name: 'id',
+    type: 'integer',
+    description: 'enter unique id league',
+    required: true
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'successfully....'
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Fobiden....'
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Internal server error....'
+  })
+  async getTeamOfLeague(@Param('id') id : number){
+    return this.leagueService.getTeamOfLeague(id)
+  }
 
 
 
@@ -208,13 +230,12 @@ export class LeagueController {
   }
 
 
+  
 
 
-  @Get('standings/:id')
-  async standingsLeague(@Param('id') id : number){
-   return this.leagueService.standingsLeague(id);
 
-  }
+
+
  
 }
 

@@ -26,6 +26,10 @@ export class LeagueService {
     return 
   }
 
+  async getLeague(){
+    return await this.leagueRepository.find()
+  }
+
   async update(id: number, updateData: Partial<League>): Promise<League> {
     const existingManage = await this.leagueRepository.findOneBy({id});
     if (!existingManage) {
@@ -50,21 +54,19 @@ export class LeagueService {
   async getTotalRecords(): Promise<number> {
     return this.leagueRepository.count();
   }
-
-
-
-  async standingsLeague(id: number):Promise<League>{
-    const queryBuilder = this.leagueRepository.createQueryBuilder('league')
-      .leftJoinAndSelect('league.teams', 'teams')
-      .where('league.id = :id', { id })
-      .orderBy('score')
-      .getOne();
-   return queryBuilder;
-  }
-
   
   GetMatchOfLeague(){
     return this.leagueRepository.find({relations: {sheduleMatchs: true}})
+   }
+
+
+  getTeamOfLeague(id: number){
+    return this.leagueRepository.find({
+      relations:{ teams: true},
+      where :{
+        id :id 
+      }
+    })
    }
 
   

@@ -6,12 +6,16 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { SheduleMatch } from './entities/shedule-match.entity';
 import { TeamService } from '../team/team.service';
 import { Team } from '../team/entities/team.entity';
+import { StandingEntity } from '../standing/entities/standing.entity';
+import { StandingService } from '../standing/standing.service';
+import { LeagueTeam } from '../league_team/entitis/league_team.entity';
+import { LeagueTeamService } from '../league_team/league_team.service';
 
 @Module({
   controllers: [SheduleMatchController],
-  providers: [SheduleMatchService,TeamService],
+  providers: [SheduleMatchService,LeagueTeamService,StandingService],
   imports:[ConfigModule,
-    TypeOrmModule.forFeature([SheduleMatch,Team]),
+    TypeOrmModule.forFeature([SheduleMatch,LeagueTeam,StandingEntity]),
 ],
 })
 export class SheduleMatchModule {}
