@@ -6,8 +6,20 @@ import { User } from "src/modules/user/entities/user.entity";
 
 export class CreateTeamDto {
     id?:number
-    nameTeam?:string;
-    logoTeam?: string;
+    @ApiProperty()
+    nameteam?:string;
+
+    @ApiProperty({ type: 'string', format: 'binary', required: true })
+    logoTeam: Express.Multer.File
+
+    @ApiProperty()
     createdBy:User;
+
+    @ApiProperty()
     leagueId: number;
+}
+
+export class UploadedFileDto{
+    @ApiProperty({ type: 'string', format: 'binary', required: true })
+    logoTeam: Express.Multer.File
 }

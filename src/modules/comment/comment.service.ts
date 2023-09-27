@@ -11,11 +11,11 @@ export class CommentService{
     constructor(
         @InjectRepository(UserComment)
         private commentRepository: CommentRepository,
-    ){}
+        ){}
 
-PostComment(createComment:CreateCommentDto,idMatch: number){
+PostComment(createComment:CreateCommentDto,idMatch: number):Promise<CreateCommentDto>{
         createComment.sheduleMatchId = idMatch;
-        return this.commentRepository.save(createComment );
+        return this.commentRepository.save(createComment);
         
     }
 }

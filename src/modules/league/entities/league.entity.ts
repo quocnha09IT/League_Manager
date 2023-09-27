@@ -1,5 +1,5 @@
 
-import { LeagueTeam } from "src/modules/league_team/entitis/league_team.entity";
+import { LeagueTeam } from "src/modules/league-team/entitis/league-team.entity";
 import { SheduleMatch } from "src/modules/shedule-match/entities/shedule-match.entity";
 import { Sport } from "src/modules/sport/entities/sport.entity";
 import { Team } from "src/modules/team/entities/team.entity";
@@ -12,7 +12,7 @@ export class League {
     id: number
 
     @Column()
-    nameLeague: string
+    nameleague: string
 
     @Column()
     sport: string

@@ -1,16 +1,13 @@
 import * as cron from 'node-cron';
 import * as nodemailer from 'nodemailer';
 import { AppService } from './app.service';
-import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
-import { Controller, Get, MessageEvent, Param, Res, Sse ,Logger} from '@nestjs/common';
-import { Response } from 'express';
-import { readFileSync } from 'fs';
-import { join } from 'path';
-import { interval, Observable, Subject } from 'rxjs';
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiQuery, ApiResponse } from '@nestjs/swagger';
+import { Controller,Post, Get, Query, UseInterceptors, UploadedFile} from '@nestjs/common';
 import { map, takeUntil } from 'rxjs/operators';
 import { MailerService } from '@nestjs-modules/mailer';
+import { FileInterceptor } from '@nestjs/platform-express';
 
-@Controller('all')
+@Controller('home')
 export class AppController {
   constructor(private readonly appService: AppService,
     private mailService : MailerService,
@@ -21,8 +18,16 @@ export class AppController {
     return this.appService.getFormattedTodayDate();
   }
 
+  // @Post('upload')
+  // @UseInterceptors(FileInterceptor('file'))
+  // async upload(@UploadedFile() file: Express.Multer.File):Promise<string>{
+  //   await this.appService.upload(file);
+  //   return "uploaded";
+  // }
 
-  @Get('Api')
+
+  @Get('HomePage')
+  @ApiOperation({summary:'get all api to home page '})
   async GetAllData(){
     return await this.appService.GetAllData()
   }
@@ -46,9 +51,10 @@ export class AppController {
   }
 
   @Get('mail')
+  @ApiOperation({summary:'send mail to user'})
   async sendMail(){
     
-     cron.schedule('44 17 * * *', async () =>{ const user =  await this.appService.getUser()
+     cron.schedule('40 16 * * *', async () =>{ const user =  await this.appService.getUser()
      const emails = user.map((user) => user.email);  
      const names = user.map((user) => user.name); 
      const today = new Date();
@@ -69,11 +75,11 @@ export class AppController {
     
       Date: ${sheduleMatch[0].date}
       Time: ${sheduleMatch[0].time}
-      Venue: ${sheduleMatch[0].matchVenue}
+      Venue: ${sheduleMatch[0].matchvenue}
     
       It's going to be an exciting match between:
-      Home team: ${awayteam[0].nameTeam}
-      Away team: ${hometeam[0].nameTeam}
+      Home team: ${awayteam[0].nameteam}
+      Away team: ${hometeam[0].nameteam}
     
       Don't miss out on this thrilling match! Make sure to mark your calendar and join us.
     
@@ -88,32 +94,22 @@ export class AppController {
     
   }
 
-  // @Get('notifications')
-  // index(@Res() response: Response) {
-  //   response
-  //     .type('text/html')
-  //     .send(readFileSync(join(__dirname, 'index.html')).toString());
-  // }
-  // private stopInterval$ = new Subject<void>();
-  // @Sse('sse')
-  // sse(): Observable<MessageEvent> {
-  // return interval(3000)
-  // .pipe(
-  //   map((_) => ({ data: { hello: this.appService.getFormattedTodayDate() } })),
-  //   takeUntil(this.stopInterval$) // Ngắt khi stopInterval$ phát ra giá trị
-  // )
-  // }
 
-  // @Get('maag')
-  // maag(){
-  //   this.stopInterval$.next();
-  // }
+  @Get('search')
+  @ApiOperation({summary:'search'})
+   async search(@Query('key') key : string){
+    return await this.appService.search(key);
+   }
 
 
 
-  @Get(':date')
+   
+
+
+
+  @Get('date')
   @ApiOperation({summary:'the shedule match'})
-  @ApiParam({
+  @ApiQuery({
     name: 'date',
     type: 'string',
     description: 'enter date in the format YYYY-MM-DD',
@@ -131,14 +127,8 @@ export class AppController {
     status: 500,
     description: 'Internal server error....'
   })
-  async getShedule(@Param('date') date: string){
+  async getShedule(@Query('date') date: string){
     return this.appService.getShedule(date);
   }
-
-
- 
-
-
-  
   
 }

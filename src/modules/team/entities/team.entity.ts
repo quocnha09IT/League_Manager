@@ -1,11 +1,11 @@
-import { Role } from "src/common/role.enum";
+import { Role } from "src/common/enum/role.enum";
 import { User } from "src/modules/user/entities/user.entity";
 import { Player } from "src/modules/player/entities/player.entity";
-import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { SheduleMatch } from "src/modules/shedule-match/entities/shedule-match.entity";
 import { League } from "src/modules/league/entities/league.entity";
 import { StandingEntity } from "src/modules/standing/entities/standing.entity";
-import { LeagueTeam } from "src/modules/league_team/entitis/league_team.entity";
+import { LeagueTeam } from "src/modules/league-team/entitis/league-team.entity";
 
 @Entity('team')
 export class Team {
@@ -13,7 +13,7 @@ export class Team {
     id: number
 
     @Column()
-    nameTeam: String
+    nameteam: String
 
     @Column({nullable:true})
     logoTeam: String    
@@ -27,8 +27,8 @@ export class Team {
     @OneToMany(() => SheduleMatch,sheduleMatch => sheduleMatch.homeTeamId)
     homeTeams: SheduleMatch[]
 
-    // @OneToMany(() => SheduleMatch,sheduleMatch => sheduleMatch.awayTeam)
-    // awayTeams: SheduleMatch[]
+     @OneToMany(() => SheduleMatch,sheduleMatch => sheduleMatch.awayTeam)
+     awayTeams: SheduleMatch[]
 
     @ManyToOne(() => User, user => user.team)
     createdBy: User;
@@ -46,7 +46,6 @@ export class Team {
     @ManyToMany(()=> League, (league) => league.teams)
     leagues: League[]
 
-    
-
+    // S
      
 }

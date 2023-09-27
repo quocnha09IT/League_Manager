@@ -1,8 +1,8 @@
 export class CreateUserDto {
-    id: number
-    name: string
-    email: string
-    password: string
-    address: string 
-    sex: boolean
+    id?: number
+    name?: string
+    email?: string
+    password?: string
+    address?: string 
+    sex?: boolean
 }

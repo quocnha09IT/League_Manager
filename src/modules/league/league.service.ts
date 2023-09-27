@@ -5,8 +5,10 @@ import { League } from './entities/league.entity';
 import { UserService } from '../user/user.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../user/entities/user.entity';
-import { Repository } from 'typeorm';
+import { DeleteResult, Like, Repository } from 'typeorm';
 import { LeagueRpository } from './repository/league.repository';
+import { Team } from '../team/entities/team.entity';
+import { async } from 'rxjs';
 
 @Injectable()
 export class LeagueService {
@@ -14,23 +16,38 @@ export class LeagueService {
               private leagueRepository:LeagueRpository
   ){}
 
-  async create(leagueDto : CreateLeagueDto, createdBy: User ):Promise<League>{
+
+
+
+async create(leagueDto : CreateLeagueDto ):Promise<League>{
     const league = new League();
-     league.nameLeague = leagueDto.nameLeague;
+    league.teams = [];
+  if (Array.isArray(leagueDto.teamId)) {
+  leagueDto.teamId.forEach((id) => {
+    const team = new Team();
+    team.id = id;
+    league.teams.push(team); 
+    });
+     league.nameleague = leagueDto.nameleague;
      league.area = leagueDto.area;
      league.level = leagueDto.level;
-     league.sport = leagueDto.sport;
-     league.createdBy = createdBy;
-   const a =  await this.leagueRepository.save(league);
-   console.log(a)
-    return 
+     league.sport = leagueDto.sport;   
+    return  await this.leagueRepository.save(league);
+  }else{
+    league.nameleague = leagueDto.nameleague;
+    league.area = leagueDto.area;
+    league.level = leagueDto.level;
+    league.sport = leagueDto.sport;
+    
+    return await this.leagueRepository.save(league);
+  }
   }
 
-  async getLeague(){
+async getLeague():Promise<League[]>{
     return await this.leagueRepository.find()
   }
 
-  async update(id: number, updateData: Partial<League>): Promise<League> {
+async update(id: number, updateData: Partial<League>): Promise<League> {
     const existingManage = await this.leagueRepository.findOneBy({id});
     if (!existingManage) {
       
@@ -39,35 +56,42 @@ export class LeagueService {
     return this.leagueRepository.save(existingManage);
   }
 
-  async delete(id:number){
+  async delete(id:number): Promise<DeleteResult>{
     const existingManage = await this.leagueRepository.delete({id});
     return existingManage;
   }
 
  
   async getPage(page: number, limit: number): Promise<League[]>{
-
     const skip = (page - 1) * limit;
-    return this.leagueRepository.find({ skip, take: limit });
+    return  await this.leagueRepository.find({ skip, take: limit });
   }
 
   async getTotalRecords(): Promise<number> {
-    return this.leagueRepository.count();
+    return await this.leagueRepository.count();
   }
   
-  GetMatchOfLeague(){
-    return this.leagueRepository.find({relations: {sheduleMatchs: true}})
+  async getMatchOfLeague():Promise<League[]>{
+    return await this.leagueRepository.find({relations: {sheduleMatchs: true}})
    }
 
 
-  getTeamOfLeague(id: number){
-    return this.leagueRepository.find({
-      relations:{ teams: true},
-      where :{
-        id :id 
-      }
-    })
-   }
+  async getTeamOfLeague(id: number):Promise<League[]>{
+    return await this.leagueRepository.find({
+        relations:{ teams: true},
+        where :{
+          id :id 
+        }
+      })
+  }
+
+  async findLeague(key: any):Promise<League[]>{
+      return await this.leagueRepository.createQueryBuilder().select()
+        .where('nameleague ILIKE :searchQuery', { searchQuery: `%${key}%` })
+        .orWhere('area ILIKE :searchQuery', { searchQuery: `%${key}%` })
+        .orderBy('nameleague', 'DESC')
+        .getMany();
+  }
 
   
 }

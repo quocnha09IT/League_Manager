@@ -28,4 +28,5 @@ export class StandingEntity  {
 
     @ManyToOne(() => Team, team => team.standings)
     team: Team;
+    last5Match: any[];
 }

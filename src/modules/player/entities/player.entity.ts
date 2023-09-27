@@ -1,16 +1,17 @@
 
-import { Role } from "src/common/role.enum";
+import { Role } from "src/common/enum/role.enum";
 import { Team } from "src/modules/team/entities/team.entity";
 import { User } from "src/modules/user/entities/user.entity";
-import { Column, Entity, JoinColumn, JoinTable, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, Index, JoinColumn, JoinTable, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Player {
     @PrimaryGeneratedColumn()
     id: number
 
+    @Index({ fulltext: true })
     @Column()
-    playerName:string
+    playername:string
 
     @Column()
     age:number
@@ -18,12 +19,14 @@ export class Player {
     @Column()
     clothesNumber:number
 
+    @Index({ fulltext: true })
     @Column()
     nationnality:string
 
     @Column()
     playForTeam:string
 
+    @Index({ fulltext: true })
     @Column()
     position: string
 

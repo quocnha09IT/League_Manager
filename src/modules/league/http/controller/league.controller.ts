@@ -4,11 +4,11 @@ import { CreateLeagueDto } from '../../dto/create-league.dto';
 import { UpdateLeagueDto } from '../../dto/update-league.dto';
 import { UserService } from '../../../user/user.service';
 import { League } from '../../entities/league.entity';
-import { Role } from 'src/common/role.enum';
+import { Role } from 'src/common/enum/role.enum';
 import { Roles, User } from 'src/decorator/roles.decorator';
 import { from } from 'rxjs';
 import {Request, response} from 'express';
-import { ApiOperation, ApiParam, ApiResponse, ApiTags,ApiBody, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiOperation, ApiParam, ApiResponse, ApiTags,ApiBody, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 
 
 @Controller('leagues')
@@ -16,41 +16,10 @@ import { ApiOperation, ApiParam, ApiResponse, ApiTags,ApiBody, ApiBearerAuth } f
 export class LeagueController {
   constructor(private leagueService: LeagueService){}
 
-  @Roles(Role.MANAGE_LEAGUE,Role.USER)
+  // @Roles(Role.MANAGE_LEAGUE,Role.USER)
   @Post('')
-  @ApiBearerAuth('Bearer')
+  // @ApiBearerAuth('Bearer')
   @ApiOperation({summary: 'create a league'})
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        nameLeague:{
-          type: 'string',
-          example: 'English Premier League',
-          description: 'this is the name league'
-        },
-
-        sport:{
-          type: 'string',
-          example: 'Football',
-          description: 'this is the name sport of league',
-        },
-
-        area:{
-          type: 'string',
-          example: 'English',
-          description: 'this is the are of league',
-        },
-
-        level:{
-          type: 'string',
-          example: 'clubs',
-          description: 'this is the level of league',
-        },
-
-      }
-    }
-  })
   @ApiResponse({
     status: 201,
     description: 'save....'
@@ -59,55 +28,28 @@ export class LeagueController {
     status: 403,
     description: 'Fobiden....'
   })
-  async create(@Body() createLeagueDte: CreateLeagueDto, @User() user) {
-    return this.leagueService.create(createLeagueDte,user);
+  async create(@Body() createLeagueDte: CreateLeagueDto) {
+    return this.leagueService.create(createLeagueDte);
   }
 
 
 
+  @Get('search')
+  @ApiOperation({summary:'search'})
+   async findLeague(@Query('key') key : string){
+    return await this.leagueService.findLeague(key);
+   }
+
+  
+
+
+
 
 
   @Roles(Role.MANAGE_LEAGUE,Role.USER)
-  @Put(':id')
+  @Put('')
   @ApiBearerAuth('Bearer')
   @ApiOperation({summary: 'update league'})
-  @ApiParam({
-    name: 'id',
-    type: 'integer',
-    description: 'enter unique id',
-    required: true
-  })
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        nameLeague:{
-          type: 'string',
-          example: 'English Premier League',
-          description: 'this is the name league'
-        },
-
-        sport:{
-          type: 'string',
-          example: 'Football',
-          description: 'this is the name sport of league',
-        },
-
-        are:{
-          type: 'string',
-          example: 'English',
-          description: 'this is the are of league',
-        },
-
-        level:{
-          type: 'string',
-          example: 'clubs',
-          description: 'this is the level of league',
-        },
-
-      }
-    }
-  })
   @ApiResponse({
     status: 201,
     description: 'save....'
@@ -116,7 +58,7 @@ export class LeagueController {
     status: 403,
     description: 'Fobiden....'
   })
-  async update(@Param('id') id: number, @Body() updateData: Partial<CreateLeagueDto>): Promise<CreateLeagueDto> {
+  async update(@Query('id') id: number, @Body() updateData: Partial<CreateLeagueDto>) {
     return this.leagueService.update(id, updateData);
   }
 
@@ -136,9 +78,9 @@ export class LeagueController {
     status: 500,
     description: 'Internal server error....'
   })
-  @Get('matchOfLeague')
-     GetMatchOfLeague(){
-      return this.leagueService.GetMatchOfLeague();
+  @Get('match-of-league')
+  async getMatchOfLeague(){
+      return await this.leagueService.getMatchOfLeague();
     }
   
 
@@ -148,10 +90,10 @@ export class LeagueController {
 
 
   @Roles(Role.MANAGE_LEAGUE,Role.USER)
-  @Delete(':id')
+  @Delete('')
   @ApiBearerAuth('Bearer')
   @ApiOperation({summary:' delete league'})
-  @ApiParam({
+  @ApiQuery({
     name: 'id',
     type: 'integer',
     description: 'enter unique id',
@@ -165,19 +107,16 @@ export class LeagueController {
     status: 403,
     description: 'Fobiden....'
   })
-  async delete(@Param('id') id: number) {
-    return this.leagueService.delete(id);
+  async delete(@Query('id') id: number) {
+    return await this.leagueService.delete(id);
   }
   
 
-  @Get(':id')
+
+
+
+  @Get('team-of-league')
   @ApiOperation({summary:'get team of league'})
-  @ApiParam({
-    name: 'id',
-    type: 'integer',
-    description: 'enter unique id league',
-    required: true
-  })
   @ApiResponse({
     status: 201,
     description: 'successfully....'
@@ -190,9 +129,12 @@ export class LeagueController {
     status: 500,
     description: 'Internal server error....'
   })
-  async getTeamOfLeague(@Param('id') id : number){
-    return this.leagueService.getTeamOfLeague(id)
+  async getTeamOfLeague(@Query('id') id : number):Promise<League[]>{
+    return await this.leagueService.getTeamOfLeague(id)
   }
+
+
+ 
 
 
 
@@ -213,7 +155,7 @@ export class LeagueController {
     status: 500,
     description: 'Internal server error....'
   })
-  async getpage(@Query('page') page :number,@Query('limit') limit :number,total : string){
+  async getPage(@Query('page') page :number,@Query('limit') limit :number,total : string){
 
     const itemsPerPage = limit > 0 ? limit : 10;
     const leagues = await this.leagueService.getPage(page, itemsPerPage);

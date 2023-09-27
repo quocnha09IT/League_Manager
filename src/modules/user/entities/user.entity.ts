@@ -1,7 +1,7 @@
 import { info } from "console";
-import { Role } from "src/common/role.enum";
-import { InfoMatch } from "src/modules/infoMatch/entities/infoMatch.entity";
-import { UserInfoMatch } from "src/modules/User_InfoMatch/entities/User_InfoMatch.entity";
+import { Role } from "src/common/enum/role.enum";
+import { InfoMatch } from "src/modules/info-match/entities/info-match.entity";
+import { UserInfoMatch } from "src/modules/user-info-match/entities/user-info-match.entity";
 import { League } from "src/modules/league/entities/league.entity";
 import { Player } from "src/modules/player/entities/player.entity";
 import { Team } from "src/modules/team/entities/team.entity";

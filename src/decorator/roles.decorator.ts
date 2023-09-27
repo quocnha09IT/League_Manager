@@ -1,7 +1,7 @@
 import { ExecutionContext, SetMetadata, UseGuards, applyDecorators, createParamDecorator } from '@nestjs/common';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { RolesGuard } from 'src/auth/guards.roles';
-import { Role } from 'src/common/role.enum';
+import { Role } from 'src/common/enum/role.enum';
 import { GqlExecutionContext } from '@nestjs/graphql';
 
 export const ROLES_KEY = 'roles';

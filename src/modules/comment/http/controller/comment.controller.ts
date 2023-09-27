@@ -11,30 +11,6 @@ export class CommnetController{
 //   @Roles( Role.MANAGE_LEAGUE)
   @Post(':id')
   @ApiOperation({summary: 'create new comment'})
-  @ApiParam({
-    name: 'id',
-    type: 'integer',
-    description: 'enter unique id of Shedule Match',
-    required: true
-  })
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        comment:{
-          type: 'string',
-          example: 'This match is so good',
-          description: 'this is the comment of user',
-        },
-        sheduleMatchId:{
-          type: 'integer',
-          example: 2,
-          description: 'this is the id shedule match',
-        },
-
-      }
-    }
-  })
   @ApiResponse({
     status: 201,
     description: 'save....'
@@ -43,7 +19,7 @@ export class CommnetController{
     status: 403,
     description: 'Fobiden....'
   })
-PostComment(@Body() createComment: CreateCommentDto, @Param('id') idMatch: number){
+PostComment(@Body() createComment: CreateCommentDto, @Param('id') idMatch: number):Promise<CreateCommentDto>{
         return this.commentService.PostComment(createComment,idMatch);
     }
 }
