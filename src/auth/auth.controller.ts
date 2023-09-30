@@ -9,25 +9,6 @@ export class AuthController {
     constructor(private authService: AuthService){}
     @ApiBearerAuth('bearer')
     @Post('login')
-    @ApiBody({
-        schema: {
-            type: 'object',
-            properties:{
-                email:{
-                    type: 'string',
-                    example:'beckham@gmail.com',
-                    description: 'this is the email',
-                },
-
-                password:{
-                    type: 'string',
-                    example: '123456',
-                    description: 'this is the password'
-                }
-
-            }
-        }
-    })
     @ApiResponse({
         status: 201,
         description: 'save....'
@@ -41,6 +22,8 @@ export class AuthController {
         return this.authService.signIn(signInDto.email, signInDto.password);
     }
 
+
+    
     @UseGuards(AuthGuard)
     @Get('users')
     GetUser(@Request() req){

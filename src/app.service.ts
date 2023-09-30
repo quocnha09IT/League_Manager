@@ -2,16 +2,16 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { format, startOfDay } from 'date-fns';
 import * as moment from 'moment-timezone';
-import { SheduleMatch } from './modules/shedule-match/entities/shedule-match.entity';
+import { SheduleMatch } from './modules/shedule-matchs/entities/shedule-match.entity';
 import {  Like, MoreThan, Repository } from 'typeorm';
 import { Response } from 'express';
 import { MailerService } from '@nestjs-modules/mailer';
-import { UserService } from './modules/user/user.service';
-import { SheduleMatchService } from './modules/shedule-match/shedule-match.service';
-import { TeamService } from './modules/team/team.service';
-import { StandingService } from './modules/standing/standing.service';
-import { LeagueService } from './modules/league/league.service';
-import { PlayerService } from './modules/player/player.service';
+import { UserService } from './modules/users/user.service';
+import { SheduleMatchService } from './modules/shedule-matchs/shedule-match.service';
+import { TeamService } from './modules/teams/team.service';
+import { StandingService } from './modules/standings/standing.service';
+import { LeagueService } from './modules/leagues/league.service';
+import { PlayerService } from './modules/players/player.service';
 import { BlobServiceClient, BlockBlobClient } from '@azure/storage-blob';
 
 

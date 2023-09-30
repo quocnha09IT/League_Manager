@@ -1,41 +1,41 @@
 import { MiddlewareConsumer, Module, NestModule, ValidationPipe } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { UserModule } from './modules/user/user.module';
-import { SheduleMatchModule } from './modules/shedule-match/shedule-match.module';
-import { PlayerModule } from './modules/player/player.module';
-import { LeagueModule } from './modules/league/league.module';
-import { SportModule } from './modules/sport/sport.module';
-import { TeamModule } from './modules/team/team.module';
+import { UserModule } from './modules/users/user.module';
+import { SheduleMatchModule } from './modules/shedule-matchs/shedule-match.module';
+import { PlayerModule } from './modules/players/player.module';
+import { LeagueModule } from './modules/leagues/league.module';
+import { SportModule } from './modules/sports/sport.module';
+import { TeamModule } from './modules/teams/team.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { League } from './modules/league/entities/league.entity';
+import { League } from './modules/leagues/entities/league.entity';
 
-import { Player } from './modules/player/entities/player.entity';
-import { SheduleMatch } from './modules/shedule-match/entities/shedule-match.entity';
-import { Sport } from './modules/sport/entities/sport.entity';
-import { Team } from './modules/team/entities/team.entity';
-import { User } from './modules/user/entities/user.entity';
+import { Player } from './modules/players/entities/player.entity';
+import { SheduleMatch } from './modules/shedule-matchs/entities/shedule-match.entity';
+import { Sport } from './modules/sports/entities/sport.entity';
+import { Team } from './modules/teams/entities/team.entity';
+import { User } from './modules/users/entities/user.entity';
 import { AuthModule } from './auth/auth.module';
 import { dataSourceoptions } from 'db/data-source';
-import { AuthSwaggerMiddleware } from './auth/authSwager.middleware';
-import { CommentModule } from './modules/comment/comment.module';
+import { AuthSwaggerMiddleware } from './auth/auth-swager.middleware';
+import { CommentModule } from './modules/comments/comment.module';
 import { APP_PIPE } from '@nestjs/core';
-import { StandingModule } from './modules/standing/standing.module';
-import { LeagueTeamModule } from './modules/league-team/league-team.module';
+import { StandingModule } from './modules/standings/standing.module';
+import { LeagueTeamModule } from './modules/league-teams/league-team.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { join } from 'path';
-import { UserService } from './modules/user/user.service';
-import { SheduleMatchService } from './modules/shedule-match/shedule-match.service';
-import { TeamService } from './modules/team/team.service';
-import { StandingService } from './modules/standing/standing.service';
-import { LeagueService } from './modules/league/league.service';
-import { StandingEntity } from './modules/standing/entities/standing.entity';
-import { InfoMatchModule } from './modules/info-match/repository/info-match.module';
+import { UserService } from './modules/users/user.service';
+import { SheduleMatchService } from './modules/shedule-matchs/shedule-match.service';
+import { TeamService } from './modules/teams/team.service';
+import { StandingService } from './modules/standings/standing.service';
+import { LeagueService } from './modules/leagues/league.service';
+import { StandingEntity } from './modules/standings/entities/standing.entity';
+import { InfoMatchModule } from './modules/info-matchs/repository/info-match.module';
 import { MulterModule } from '@nestjs/platform-express';
-import { UserInfoMatchModule } from './modules/user-info-match/user-info-match.module';
-import { PlayerService } from './modules/player/player.service';
+import { UserInfoMatchModule } from './modules/user-info-matchs/user-info-match.module';
+import { PlayerService } from './modules/players/player.service';
 
 @Module({
   imports: [

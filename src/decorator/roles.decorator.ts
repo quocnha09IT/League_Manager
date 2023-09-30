@@ -22,12 +22,12 @@ export const User = createParamDecorator(
     },
   );
 
-  export const player = createParamDecorator(
-    (data: unknown, context: ExecutionContext) => {
+  // export const player = createParamDecorator(
+  //   (data: unknown, context: ExecutionContext) => {
       
-      const request = context.switchToHttp().getRequest();
-      const user = request.user.id;
-      return user;
-    },
-  )
+  //     const request = context.switchToHttp().getRequest();
+  //     const user = request.user.id;
+  //     return user;
+  //   },
+  // )
 
