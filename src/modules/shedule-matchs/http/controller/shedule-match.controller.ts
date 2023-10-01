@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Put, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Put, Query, HttpStatus, HttpCode } from '@nestjs/common';
 import { SheduleMatchService } from '../../shedule-match.service';
 import { CreateSheduleMatchDto } from '../dto/create-shedule-match.dto';
 import { UpdateSheduleMatchDto } from '../dto/update-shedule-match.dto';
@@ -15,170 +15,46 @@ import { EnterGoalDto } from '../dto/enter-goal.dto';
 export class SheduleMatchController {
   constructor(private readonly sheduleMatchService: SheduleMatchService) {}
 
-
-
-  // @ApiBearerAuth('Bearer')
-  // @Roles( Role.MANAGE_LEAGUE)
   @Post()
   @ApiOperation({summary: 'create new shedule match'})
-  @ApiBody({
-    
-    schema: {
-      type: 'object',
-      properties: {
-        id: {
-          type: 'integer',
-          example: 5,
-          description : 'this is the unique ID',
-        },
-
-        date:{
-          type: 'date',
-          example: '2023-08-16',
-          description: 'this is the date'
-        },
-
-        time:{
-          type: 'time',
-          example: '10:30:00',
-          description: 'this is the time',
-        },
-
-        matchVenue:{
-          type: 'string',
-          example: 'Stamford Bridge',
-          description: 'this is the name match venue',
-        },
-
-        homeTeamId:{
-          type: 'integer',
-          example: 3,
-          description: 'this is the Id home team',
-        },
-
-        awayTeamId:{
-          type: 'integer',
-          example: 4,
-          description: 'this is the Id away team'
-        },
-        leagueId:{
-          type: 'integer',
-          example: 22,
-          description: 'this is the leauge Id two team'
-        }
-      }
-    }
-  })
-  @ApiResponse({
-    status: 201,
-    description: 'save....'
-  })
-  @ApiResponse({
-    status: 403,
-    description: 'Fobiden....'
-  })
+  @HttpCode(HttpStatus.CREATED)
   createScheduleMatch(@Body() shedule:CreateSheduleMatchDto):Promise<SheduleMatch> {
     return this.sheduleMatchService.createScheduleMatch(shedule);
   }
 
-
-
   @Get('historys')
   @ApiOperation({summary:'get history to home team '})
+  @HttpCode(HttpStatus.NO_CONTENT)
   async getHistoryMatch(@Query('teamId') teamId:number): Promise<SheduleMatch[]>{
     return this.sheduleMatchService.getHistoryMatch(teamId)
   }
-
-
-
-  
-
-
-
 
   @Get()
   @ApiBearerAuth('Bearer')
   @Roles( Role.MANAGE_LEAGUE)
   @ApiOperation({summary:'get all the shedule match'})
-  @ApiResponse({
-    status: 201,
-    description: 'save....'
-  })
-  @ApiResponse({
-    status: 403,
-    description: 'Fobiden....'
-  })
-  @ApiResponse({
-    status: 500,
-    description: 'Internal server error....'
-  })
+  @HttpCode(HttpStatus.NO_CONTENT)
   findAll() {
     return this.sheduleMatchService.findAll();
   }
  
-
-
-
   @Put()
   @ApiBearerAuth('')
   @Roles( Role.MANAGE_LEAGUE)
   @ApiOperation({summary: 'update shedule match'})
-  @ApiResponse({
-    status: 201,
-    description: 'update successfully....'
-  })
-  @ApiResponse({
-    status: 403,
-    description: 'Fobiden....'
-  })
+  @HttpCode(HttpStatus.NO_CONTENT)
   updateScheduleMatch(@Query('id') id: string, @Body() createSheduleMatchDto: CreateSheduleMatchDto) {
     return this.sheduleMatchService.updateScheduleMatch(+id, createSheduleMatchDto);
   }
-
-
-
-
-  // get comment of user for match
-
-  // @Get('cmt')
-  // @ApiOperation({summary:'get all the comment of user for match'})
-  // @ApiResponse({
-  //   status: 201,
-  //   description: 'save....'
-  // })
-  // @ApiResponse({
-  //   status: 403,
-  //   description: 'Fobiden....'
-  // })
-  // @ApiResponse({
-  //   status: 500,
-  //   description: 'Internal server error....'
-  // })
-  // async GetComment(@Query('id')id :number){
-  //   return await this.sheduleMatchService.GetComment(id);
-  // }
-
-
-
 
   @Put('add-team-play')
   @ApiBearerAuth('Bearer')
   @Roles( Role.MANAGE_LEAGUE)
   @ApiOperation({summary: 'update shedule match'})
-  @ApiResponse({
-    status: 201,
-    description: 'update successfully....'
-  })
-  @ApiResponse({
-    status: 403,
-    description: 'Fobiden....'
-  })
+  @HttpCode(HttpStatus.NO_CONTENT)
   addTeamPlay(@Query('id') id: number,@Body() teamPlay: AddTeamDto){
      return this.sheduleMatchService.addTeamPlay(id, teamPlay);
   }
-
-
-
 
   @Delete('')
   @ApiBearerAuth('Bearer')
@@ -190,23 +66,14 @@ export class SheduleMatchController {
     description: 'enter unique id',
     required: true
   })
-  @ApiResponse({
-    status: 201,
-    description: 'delete successfully....'
-  })
-  @ApiResponse({
-    status: 403,
-    description: 'Fobiden....'
-  })
+  @HttpCode(HttpStatus.NO_CONTENT)
   remove(@Query('id') id: string) {
     return this.sheduleMatchService.remove(+id);
   }
 
-
-
-@Put('enter-goals')
-@Roles( Role.MANAGE_LEAGUE,Role.USER)
-@ApiBearerAuth('Bearer')
+  @Put('enter-goals')
+  @Roles( Role.MANAGE_LEAGUE,Role.USER)
+  @ApiBearerAuth('Bearer')
   @ApiOperation({summary: 'Enter goal'})
   @ApiQuery({
     name: 'id',
@@ -214,15 +81,8 @@ export class SheduleMatchController {
     description: 'enter unique id',
     required: true
   })
-  @ApiResponse({
-    status: 201,
-    description: 'update successfully....'
-  })
-  @ApiResponse({
-    status: 403,
-    description: 'Fobiden....'
-  })
-async enterGoal(@Query('id') id :number,@Body() goal: EnterGoalDto){
+  @HttpCode(HttpStatus.NO_CONTENT)
+async enterGoal(@Query('id') id :number,@Body() goal: EnterGoalDto): Promise<{message: string}>{
  return this.sheduleMatchService.enterGoal(id,goal)
 }
 }

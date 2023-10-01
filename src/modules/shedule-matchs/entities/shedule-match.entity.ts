@@ -1,5 +1,3 @@
-
-import { UserComment } from "src/modules/comments/entities/comment.entity";
 import { League } from "src/modules/leagues/entities/league.entity";
 import { StandingEntity } from "src/modules/standings/entities/standing.entity";
 import { Team } from "src/modules/teams/entities/team.entity";
@@ -45,7 +43,6 @@ export class SheduleMatch {
 
     @Column({ type: "timestamp" })
     timeMatch: Timestamp
-    
 
     @ManyToOne(() => Team, (team) => team.homeTeams)
     homeTeam: Team;
@@ -55,9 +52,6 @@ export class SheduleMatch {
 
     @ManyToOne(()=> League,(league)=> league.sheduleMatchs)
     league: League
-
-    @OneToMany(()=> UserComment, userComment => userComment.sheduleMatch)
-    userComment: UserComment[]
 
     @OneToOne(() => StandingEntity)
     standing: StandingEntity

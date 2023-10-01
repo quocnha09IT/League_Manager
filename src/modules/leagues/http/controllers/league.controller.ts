@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Put ,Req, Query} from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Put ,Req, Query, HttpCode, HttpStatus} from '@nestjs/common';
 import { LeagueService } from '../../league.service';
 import { CreateLeagueDto } from '../../dto/create-league.dto';
 import { League } from '../../entities/league.entity';
@@ -17,71 +17,32 @@ export class LeagueController {
   @Post()
   @ApiBearerAuth('Bearer')
   @ApiOperation({summary: 'create a league'})
-  @ApiResponse({
-    status: 201,
-    description: 'save....'
-  })
-  @ApiResponse({
-    status: 403,
-    description: 'Fobiden....'
-  })
-  async create(@Body() createLeagueDte: CreateLeagueDto) {
+  @HttpCode(HttpStatus.CREATED)
+  async create(@Body() createLeagueDte: CreateLeagueDto):Promise<League> {
     return this.leagueService.create(createLeagueDte);
   }
 
-
-
   @Get('search')
   @ApiOperation({summary:'search'})
-   async findLeague(@Query('key') key : string){
+  @HttpCode(HttpStatus.NO_CONTENT)
+   async findLeague(@Query('key') key : string):Promise<League[]>{
     return await this.leagueService.findLeague(key);
    }
-
-  
-
 
   @Roles(Role.MANAGE_LEAGUE,Role.USER)
   @Put()
   @ApiBearerAuth('Bearer')
-  @ApiOperation({summary: 'update league'})
-  @ApiResponse({
-    status: 201,
-    description: 'save....'
-  })
-  @ApiResponse({
-    status: 403,
-    description: 'Fobiden....'
-  })
+  @HttpCode(HttpStatus.NO_CONTENT)
   async update(@Query('id') id: number, @Body() updateData: Partial<CreateLeagueDto>):Promise<League> {
     return this.leagueService.updateLeague(id, updateData);
   }
 
-
-
-
   @ApiOperation({summary:'get match of league'})
-  @ApiResponse({
-    status: 201,
-    description: 'successfully....'
-  })
-  @ApiResponse({
-    status: 403,
-    description: 'Fobiden....'
-  })
-  @ApiResponse({
-    status: 500,
-    description: 'Internal server error....'
-  })
+  @HttpCode(HttpStatus.NO_CONTENT)
   @Get('match-of-leagues')
   async getMatchOfLeague():Promise<League[]>{
       return await this.leagueService.getMatchOfLeague();
     }
-  
-
-
-
-
-
 
   @Roles(Role.MANAGE_LEAGUE,Role.USER)
   @Delete()
@@ -93,62 +54,23 @@ export class LeagueController {
     description: 'enter unique id',
     required: true
   })
-  @ApiResponse({
-    status: 201,
-    description: 'delete successfully....'
-  })
-  @ApiResponse({
-    status: 403,
-    description: 'Fobiden....'
-  })
+  @HttpCode(HttpStatus.NO_CONTENT)
   async delete(@Query('id') id: number) {
     return await this.leagueService.deleteLeague(id);
   }
-  
 
-
-
-
-  @Get('team-of-league')
+  @Get('team-of-leagues')
   @ApiOperation({summary:'get team of league'})
-  @ApiResponse({
-    status: 201,
-    description: 'successfully....'
-  })
-  @ApiResponse({
-    status: 403,
-    description: 'Fobiden....'
-  })
-  @ApiResponse({
-    status: 500,
-    description: 'Internal server error....'
-  })
+  @HttpCode(HttpStatus.NO_CONTENT)
   async getTeamOfLeague(@Query('id') id : number):Promise<League[]>{
     return await this.leagueService.getTeamOfLeague(id)
   }
-
-
- 
-
-
-
 
   @Get('')
   @Roles(Role.MANAGE_LEAGUE,Role.USER)
   @ApiBearerAuth('Bearer')
   @ApiOperation({summary:'get all league have page'})
-  @ApiResponse({
-    status: 201,
-    description: 'successfully....'
-  })
-  @ApiResponse({
-    status: 403,
-    description: 'Fobiden....'
-  })
-  @ApiResponse({
-    status: 500,
-    description: 'Internal server error....'
-  })
+  @HttpCode(HttpStatus.NO_CONTENT)
   async getPage(@Query('page') page :number,@Query('limit') limit :number,total : string): Promise<{
     currentPage: number;
     totalPage: number;
@@ -157,7 +79,6 @@ export class LeagueController {
     perPage: number;
     data: League[];
 }>{
-
     const itemsPerPage = limit > 0 ? limit : 10;
     const leagues = await this.leagueService.getPage(page, itemsPerPage);
     const totalRecords = await this.leagueService.getTotalRecords();

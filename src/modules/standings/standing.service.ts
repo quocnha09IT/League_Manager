@@ -80,10 +80,6 @@ export class StandingService {
       return standing
     }
 
-
-
-
-
     async getLastFiveMatch(Standing:string,leagueid : number):Promise< {
       teamId: number;
       lastFive: string[];
@@ -112,8 +108,6 @@ export class StandingService {
           }
     }
 
-
-
     async addLastFiveToStandingAll(data) :Promise<StandingEntity[]>{
       const  standingAll = await data.standingall;
       const getLastFiveMatch = await data.getLastFiveMatch;
@@ -128,7 +122,6 @@ export class StandingService {
       })
        return mapData
     }
-
 // merged array 
     async mergedArray(resultArray: {
       teamId: number;
@@ -144,7 +137,6 @@ export class StandingService {
         return  resultArray
     }
 
-
     // look stadingHome set score plus
     async loopStanding(standingHome : any, scoreMap: Map<any, any>){
       standingHome.forEach((item) => {
@@ -158,15 +150,11 @@ export class StandingService {
        return standingHome
     }
 
-
-
-
      async addLastFivesToStanding(standingData, lastFivesData) {
       const lastFivesMap = {};
       for (const item of lastFivesData) {
         lastFivesMap[item.teamId] = await  item.lastFive;
       }
-
       for (const standingItem of standingData.standing) {
         const teamId = await standingItem.teamId;
         if (lastFivesMap.hasOwnProperty(teamId)) {
@@ -176,27 +164,22 @@ export class StandingService {
       return await standingData
     }
 
-
-
     async getStandingHomeAway(standingQuery:HomeAwayEnum ,leagueId: number){
       const standing = await  this.standing(leagueId)
       const standings = standing.map(st => st.teamId);
       const standingHome = await this.sheduleMatchService.getStandingHomeAway(standingQuery,standings, leagueId);
       const scoreMap = new Map();
-     
       this.loopStanding(standingHome,scoreMap);
       const resultStandingArray = Array.from(scoreMap.entries()).map(([teamId, totalScore]) => ({
         teamId,
         score: totalScore,
       }));
-      
       const standingHomeAway = await this.standing(leagueId)
       const standingall = await this.standing(leagueId)
       const resultHomeOrAway = new Map();
       standingHomeAway.forEach((item) => {
         resultHomeOrAway.set(item.teamId, item);
       });
-
     this.mergedArray(resultStandingArray,resultHomeOrAway);
     const standingHomeOrAway = { standing: [...resultHomeOrAway.values()] };
     let StandingQuery = standingQuery
@@ -208,7 +191,6 @@ export class StandingService {
        }
       else if(standingQuery === HomeAwayEnum.Away)
       return await this.addLastFivesToStanding(standingHomeOrAway,getLastFiveMatch) 
-
     }
    
 }

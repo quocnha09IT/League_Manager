@@ -5,21 +5,16 @@ import { UserModule } from './modules/users/user.module';
 import { SheduleMatchModule } from './modules/shedule-matchs/shedule-match.module';
 import { PlayerModule } from './modules/players/player.module';
 import { LeagueModule } from './modules/leagues/league.module';
-import { SportModule } from './modules/sports/sport.module';
 import { TeamModule } from './modules/teams/team.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-
 import { League } from './modules/leagues/entities/league.entity';
-
 import { Player } from './modules/players/entities/player.entity';
 import { SheduleMatch } from './modules/shedule-matchs/entities/shedule-match.entity';
-import { Sport } from './modules/sports/entities/sport.entity';
 import { Team } from './modules/teams/entities/team.entity';
 import { User } from './modules/users/entities/user.entity';
 import { AuthModule } from './auth/auth.module';
 import { dataSourceoptions } from 'db/data-source';
 import { AuthSwaggerMiddleware } from './auth/auth-swager.middleware';
-import { CommentModule } from './modules/comments/comment.module';
 import { APP_PIPE } from '@nestjs/core';
 import { StandingModule } from './modules/standings/standing.module';
 import { LeagueTeamModule } from './modules/league-teams/league-team.module';
@@ -27,7 +22,6 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { join } from 'path';
 import { UserService } from './modules/users/user.service';
-import { SheduleMatchService } from './modules/shedule-matchs/shedule-match.service';
 import { TeamService } from './modules/teams/team.service';
 import { StandingService } from './modules/standings/standing.service';
 import { LeagueService } from './modules/leagues/league.service';
@@ -73,8 +67,8 @@ import { PlayerService } from './modules/players/player.service';
     TypeOrmModule.forRoot(dataSourceoptions),
     TypeOrmModule.forFeature([
       SheduleMatch,User,Team,League,StandingEntity,Player]),
-    AuthModule,UserModule, SheduleMatchModule, PlayerModule, LeagueModule, SportModule, 
-    TeamModule, AuthModule,CommentModule,StandingModule,LeagueTeamModule,InfoMatchModule,UserInfoMatchModule,
+    AuthModule,UserModule, SheduleMatchModule, PlayerModule, LeagueModule, 
+    TeamModule, AuthModule,StandingModule,LeagueTeamModule,InfoMatchModule,UserInfoMatchModule,
       ],
   controllers: [AppController],
   providers: [AppService,

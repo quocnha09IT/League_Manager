@@ -13,8 +13,6 @@ export class LeagueTeamService {
        return this.leagueTeamRepository.save(leagueteam )
     }
 
-
-
     AddLeagueTeam( idTeam: number,idLeague: number):Promise<LeagueTeam>{
         const leagueTeam = new LeageTeamDto()
         leagueTeam.teamId = idTeam;
@@ -22,8 +20,6 @@ export class LeagueTeamService {
         return this.leagueTeamRepository.save(leagueTeam);
     }
 
-
-    
     async findLeagueId(id: number):Promise<number[]>{
        const result =  await this.leagueTeamRepository.find({where : {teamId :id}})
        const leagueIds = result.map(leagueTeam => leagueTeam.leagueId);

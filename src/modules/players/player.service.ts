@@ -38,7 +38,7 @@ export class PlayerService {
     return this.playerRepository.save(existingManage);
   }
 
-  async assignPlayerToTeam(teamId: UpdateTeamIdsDto, id: number) {
+  async assignPlayerToTeam(teamId: UpdateTeamIdsDto, id: number):Promise<string> {
     const player = await this.playerRepository.find({where:{id}})
     if (!player) {
       console.log('do have not player')
@@ -51,14 +51,9 @@ export class PlayerService {
      await this.playerRepository.update(id ,  { team: { id: teamIds } })
     
   }
-
-
-
-
  
-  async findPlayer(key: any){
-      return await this.playerRepository.createQueryBuilder().select()
-    //.where('(playername ILIKE :searchQuery OR nationnality ILIKE :searchQuery OR position ILIKE :searchQuery  )', { searchQuery: `%${key}%` })
+  async findPlayer(key: any):Promise<Player[]>{
+    return await this.playerRepository.createQueryBuilder().select()
     .where('playername ILIKE :searchQuery', { searchQuery: `%${key}%` })
     .orWhere('nationnality ILIKE :searchQuery', { searchQuery: `%${key}%` })
     .orWhere('position ILIKE :searchQuery', { searchQuery: `%${key}%` })
@@ -66,8 +61,5 @@ export class PlayerService {
     .orderBy('nationnality', 'DESC')
     .orderBy('playername', 'DESC')
     .getMany();
-  
     }
-
-
 }

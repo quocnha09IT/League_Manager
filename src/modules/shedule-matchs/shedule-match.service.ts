@@ -9,11 +9,8 @@ import { StandingService } from '../standings/standing.service';
 import { LeagueTeamService } from '../league-teams/league-team.service';
 import { format, startOfDay } from 'date-fns';
 import { HomeAwayEnum } from '../standings/enum/standing.enum';
-import { async } from 'rxjs';
-
 
 @Injectable()
-
 export class SheduleMatchService {
   private formattedToday: string;
   constructor(@InjectRepository(SheduleMatch)
@@ -25,11 +22,9 @@ export class SheduleMatchService {
     this.formattedToday = this.getFormattedTodayDate();
    }
 
-
 createScheduleMatch(shedule:CreateSheduleMatchDto):Promise<SheduleMatch> {
     return this.sheduleRepository.save(shedule);   
   }
-
 
 async findAll() {
   const schedules = await this.sheduleRepository.find({
@@ -44,7 +39,6 @@ async findAll() {
   return schedules;
   }
 
-
 async updateScheduleMatch(id: number, updateData: Partial<CreateSheduleMatchDto>): Promise<SheduleMatch> {
     const existingManage = await this.sheduleRepository.findOneBy({id});
     if (!existingManage) {   
@@ -53,21 +47,14 @@ async updateScheduleMatch(id: number, updateData: Partial<CreateSheduleMatchDto>
     return this.sheduleRepository.save(existingManage);
   }
 
-
-  
-
 async checkIfAnyElementMatches(arr1: number[], arr2: number[]): Promise<boolean> {
     const exists = arr1.some(element => arr2.includes(element));
     return exists;
   }
 
-
-
-
 async addTeamPlay(id:number,teamPlay:Partial<CreateSheduleMatchDto>): Promise<{message: string}>{
     const homeTeam = (teamPlay as any).homeTeamId;
     const awayTeam = (teamPlay as any).awayTeamId;
-
     const leaguehomeid = await this.leagueteamService.findLeagueId(homeTeam);
     const leagueawayid = await this.leagueteamService.findLeagueId(awayTeam);
     const result = await this.checkIfAnyElementMatches(leaguehomeid, leagueawayid);
@@ -79,38 +66,29 @@ async addTeamPlay(id:number,teamPlay:Partial<CreateSheduleMatchDto>): Promise<{m
       // get the date the user id input
       const check = await this.sheduleRepository.findBy({id});
       const datePlay = check[0].date;
-    
       const [match,count] = await this.sheduleRepository.findAndCount({ where: {date : datePlay  } });
       const homeTeamIds = match.map(match => match.homeTeamId);
       const awayTeamIds = match.map(match => match.awayTeamId);
-
       const homeTeamIdsArray = homeTeamIds.filter(id => id !== null);
       const awayTeamIdsArray = awayTeamIds.filter(id => id !== null);
-      
       const targetValues = [homeTeam, awayTeam];
-
       const uniqueHomeTeamIds = homeTeamIdsArray.find(id => targetValues.includes(id));
       const uniqueAwayTeamIds = awayTeamIdsArray.find(id => targetValues.includes(id));
-      
           if(count >= 2){
             if(uniqueAwayTeamIds == undefined && uniqueHomeTeamIds == undefined){        
               await this.sheduleRepository.update(id,{  homeTeamId: homeTeam,awayTeamId: awayTeam,});
             }
             else{
-                throw new HttpException('this is team has been shedule macth!!!!!', HttpStatus.FORBIDDEN);
-                }
-          }else{
+              throw new HttpException('this is team has been shedule macth!!!!!', HttpStatus.FORBIDDEN)
+             }
+            }else{ 
             await this.sheduleRepository.update(id,{  homeTeamId: homeTeam,awayTeamId: awayTeam,}); 
-               }
+            }
                return { message: 'inset two team  successfully!!!!!' };
             }
         }else {  throw new HttpException('the two team different league!!!!!', HttpStatus.FORBIDDEN);}
   
    }
-
-
-
-
 
   async calculateForTeamFisrtScore(goalHome: number, goalAway: number, awayTeamId:number, homeTeamId: number, leagueId: number ){
     if(goalHome > goalAway){
@@ -134,11 +112,6 @@ async addTeamPlay(id:number,teamPlay:Partial<CreateSheduleMatchDto>): Promise<{m
     }
    }
 
-
-
-
-
-
    async calculateScoreSameLeagueIdNewTeamAway(goalAway: number, goalHome: number,awayTeamId: number ,homeTeamId:number ,leagueId: number){
     if(goalAway > goalHome){
       await Promise.all([
@@ -159,10 +132,7 @@ async addTeamPlay(id:number,teamPlay:Partial<CreateSheduleMatchDto>): Promise<{m
     }
    }
 
-
-
-
-   async calculateScoreSameLeagueIdNewTeamHome(goalAway: number, goalHome: number,awayTeamId: number ,homeTeamId:number ,leagueId: number){
+async calculateScoreSameLeagueIdNewTeamHome(goalAway: number, goalHome: number,awayTeamId: number ,homeTeamId:number ,leagueId: number){
    if(goalAway > goalHome){
     await Promise.all([
      this.standingService.saveScore( goalAway,goalHome,1,0,homeTeamId,leagueId),
@@ -180,10 +150,6 @@ async addTeamPlay(id:number,teamPlay:Partial<CreateSheduleMatchDto>): Promise<{m
     ]) 
  }
 }
-
-
-
-
 
 async calculateScoreSameLeagueId(goalAway: number, goalHome: number,awayTeamId: number ,homeTeamId:number ,leagueId: number){
   if(goalAway < goalHome){
@@ -206,24 +172,12 @@ async calculateScoreSameLeagueId(goalAway: number, goalHome: number,awayTeamId: 
   }
 }
  
-  
-  
-
-
-
 async remove(id:number){
     const existingManage = await this.sheduleRepository.delete({id});
     return existingManage;
   }
 
-
-
- 
-
-
-async enterGoal(id: number , goal : Partial<SheduleMatch>):Promise<{
-  message: string;
-}>{
+async enterGoal(id: number , goal : Partial<SheduleMatch>):Promise<{message: string}>{
   const findOneTeam = await this.sheduleRepository.findBy({id})
   if(findOneTeam[0].isProcessed != true){
   // inser score home team and away team
@@ -237,12 +191,9 @@ async enterGoal(id: number , goal : Partial<SheduleMatch>):Promise<{
       })
     .where("id =:id",{id: id})
     .execute()
-
   // calculate score of team
 const findTeamAway = await this.standingService.findTeamLeagueId(findOneTeam[0].awayTeamId);
 const findTeamHome = await this.standingService.findTeamLeagueId(findOneTeam[0].homeTeamId);
-
-
   if(findTeamAway === null && findTeamHome === null){
     await this.calculateForTeamFisrtScore(goal.goalHome, goal.goalAway, findOneTeam[0].awayTeamId, findOneTeam[0].homeTeamId, findOneTeam[0].leagueId)
   }
@@ -277,23 +228,19 @@ const findTeamHome = await this.standingService.findTeamLeagueId(findOneTeam[0].
         await this.calculateForTeamFisrtScore(goal.goalHome, goal.goalAway, findOneTeam[0].awayTeamId, findOneTeam[0].homeTeamId, findOneTeam[0].leagueId)   
       }
      }       
-  }
+    }
     return { message: 'enter goal successfully!!!!!' };
- }
- else{     
+  }
+  else{     
       throw new HttpException('this match has been update!!!!!', HttpStatus.FORBIDDEN);
- }
+  }
 }
-
 
   getFormattedTodayDate(): string {
     const today = startOfDay(new Date());
     const formattedToday = format(today, 'yyyy-MM-dd');
     return formattedToday;
   }
-
-
-
 
   async getHistoryMatch(teamId:number): Promise<SheduleMatch[]>{
     return await this.sheduleRepository.find({
@@ -303,9 +250,6 @@ const findTeamHome = await this.standingService.findTeamLeagueId(findOneTeam[0].
       },
     })
   }
-
-
-
 
   async getLast5MatchAway(standing : any, leagueId: number):Promise<{teamId:number,lastFive:string[]}[]>{
     const getLast5: { teamId: number, lastFive: string[] }[] = [];
@@ -335,10 +279,6 @@ const findTeamHome = await this.standingService.findTeamLeagueId(findOneTeam[0].
   }
     return getLast5
   }
-
-
-
-
   
   async getLast5MatchHome(standing : any, leagueId: number):Promise<{teamId:number,lastFive:string[]}[]>{
     const getLast5: { teamId: number, lastFive: string[] }[] = [];
@@ -368,15 +308,8 @@ const findTeamHome = await this.standingService.findTeamLeagueId(findOneTeam[0].
   }
     return getLast5
   }
-
-
-
   
-
-
-    
   async getStandingHomeAway(standingQuery:HomeAwayEnum,standing: any,leagueId:number):Promise<{score: number; teamId: number}[]>{
-    
     if(standingQuery == HomeAwayEnum.Home){
       let results: any[] = [];
       let total = 0;
@@ -413,19 +346,11 @@ const findTeamHome = await this.standingService.findTeamLeagueId(findOneTeam[0].
         } 
         else if( goalAway < goalHome){
          results.push({score :total + 0, teamId :standing[i]})
-       } 
-
+       }
        } 
      }
      return results
     }
       
-    }
-    
-
-    
-
-
- 
-    
+    }   
 }

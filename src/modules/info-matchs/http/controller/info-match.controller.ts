@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Param, Post, Put, Query } from "@nestjs/common";
+import { Body, Controller, Delete, HttpCode, HttpStatus, Param, Post, Put, Query } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { InfoMatchDto } from "src/modules/info-matchs/dto/info-match.dto";
 import { InfoMatchService } from "src/modules/info-matchs/info-match.service";
@@ -12,6 +12,7 @@ export class InfoMatchController {
 
 
     @Post()
+    @HttpCode(HttpStatus.CREATED)
     @ApiOperation({summary:'insert infomation for match'})
     async addInfoMatch(@Body()infoMatchDto: InfoMatchDto){
         return await this.infoMatchService.addInfoMatch(infoMatchDto)
@@ -19,6 +20,7 @@ export class InfoMatchController {
 
 
     @Delete()
+    @HttpCode(HttpStatus.NO_CONTENT)
     @ApiOperation({summary:'delete infomation for match'})
     async deleteInfoMatch(@Query('id')id: number){
         return await this.infoMatchService.deleteInfoMatch(id)
@@ -26,6 +28,7 @@ export class InfoMatchController {
 
 
     @Put()
+    @HttpCode(HttpStatus.NO_CONTENT)
     @ApiOperation({summary:'update infomation for match'})
     async updateInfoMatch(@Query('id')id : number,@Body()infoMatchDto: InfoMatchDto){
         return await this.infoMatchService.updateInfoMatch(id,infoMatchDto)

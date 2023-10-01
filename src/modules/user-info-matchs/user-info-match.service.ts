@@ -11,14 +11,13 @@ export class UserInfoMatchService{
                 private userInfoMatchRepository: UserInfoMatchRepository
     ){}
 
-    async addUserInfoMatch(UserId:User,infoMatchDto:UserInfoMatchDto){
+    async addUserInfoMatch(UserId:User,infoMatchDto:UserInfoMatchDto):Promise<UserInfoMatch>{
         const infoMatch  = new UserInfoMatch()
         infoMatch.UserId = UserId;
         infoMatch.IdInfoMatch = infoMatchDto.IdInfoMatch;
         infoMatch.action = infoMatchDto.action;
       return await this.userInfoMatchRepository.save(infoMatch)
     }
-
 
     async deleteUserInfoMatch(id: number){
       return await this.userInfoMatchRepository.delete(id);

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, UseInterceptors, UploadedFile, ParseFilePipeBuilder, BadRequestException, UploadedFiles, Res, Query, Version, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, UseInterceptors, UploadedFile, ParseFilePipeBuilder, BadRequestException, UploadedFiles, Res, Query, Version, Put, HttpCode, HttpStatus } from '@nestjs/common';
 import { TeamService } from '../../team.service';
 import { CreateTeamDto } from '../dto/create-team.dto';
 import { Roles } from 'src/decorator/roles.decorator';
@@ -14,65 +14,27 @@ import { UploadLogoTeam } from '../dto/upload-logo.dto';
 export class TeamController {
   constructor(private readonly teamService: TeamService,
     ) {}
-  
-
-
-
   @Get('search')
   @ApiOperation({summary: 'search'})
   async searchTeam(@Query('key')key: string):Promise<Team[]>{
     return this.teamService.searchTeam(key);
   }
 
-
-
   @Get()
   @ApiBearerAuth('Bearer')
   @ApiOperation({summary: 'find all team'})
   @Roles(Role.MANAGE_TEAM, Role.MANAGE_LEAGUE)
-  @ApiOperation({summary:'get all the team'})
-  @ApiResponse({
-    status: 201,
-    description: 'save....'
-  })
-  @ApiResponse({
-    status: 403,
-    description: 'Fobiden....'
-  })
-  @ApiResponse({
-    status: 500,
-    description: 'Internal server error....'
-  })
+  @HttpCode(HttpStatus.NO_CONTENT)
   findAll():Promise<Team[]> {
     return this.teamService.findAll();
   }
 
-
-  
-
-
-
   @Get(':id')
   @ApiOperation({summary:'get league of team'})
-  @ApiResponse({
-    status: 201,
-    description: 'successfully....'
-  })
-  @ApiResponse({
-    status: 403,
-    description: 'Fobiden....'
-  })
-  @ApiResponse({
-    status: 500,
-    description: 'Internal server error....'
-  })
+  @HttpCode(HttpStatus.NO_CONTENT)
   async getLeagueOfTeam(@Query('id') id : number):Promise<Team[]>{
     return await this.teamService.getLeagueOfTeam(id)
   }
-
-
-
-
 
   @Version('1')
   @Post()
@@ -88,8 +50,6 @@ export class TeamController {
       return { upload, message: 'uploaded successfully' } 
   } 
 
-
-
   @Delete(':id')
   @ApiConsumes('multipart/form-data') 
   @UseInterceptors(FileInterceptor('logoTeam'))
@@ -102,9 +62,6 @@ export class TeamController {
     }
   }
 
-
-  
-  
   @Put('upload-logo-teams')
   @ApiConsumes('multipart/form-data') 
   @UseInterceptors(FileInterceptor('logoTeam'), CustomFileInterceptor) 

@@ -8,9 +8,6 @@ import { PlayerService } from '../players/player.service';
 import { BlobServiceClient, BlockBlobClient } from '@azure/storage-blob';
 import { uuid } from 'uuidv4';
 import { ConfigService } from '@nestjs/config';
-
-
-
 @Injectable()
 export class TeamService {
   constructor(@InjectRepository(Team)
@@ -19,7 +16,6 @@ export class TeamService {
   private readonly playerService: PlayerService,
   private readonly configService: ConfigService,
 ){}private containerName: string; 
-
 
   async GetTeam():Promise<Team[]>{
     return await this.teamRepository.find()
@@ -40,7 +36,6 @@ export class TeamService {
     return queryBuilder;
   }
 
-
   async findTeamId(teamId : number):Promise<Team>{
     const team =   await this.teamRepository.findOneBy({
       id : teamId
@@ -48,16 +43,13 @@ export class TeamService {
       return team;
   }
 
-
   async findTeam(id : number):Promise<Team[]>{
     return await this.teamRepository.findBy({id})
   }
 
-
   async findLeague(id: number):Promise<Team>{
     return this.teamRepository.findOne({where:{id}});
   }
-
 
   async getLeagueOfTeam(id : number):Promise<Team[]>{
     return this.teamRepository.find({
@@ -68,12 +60,6 @@ export class TeamService {
     })
   }
 
-
-
-
-
-
-
   async searchTeam(key: string):Promise<Team[]>{
     return await this.teamRepository.createQueryBuilder('team').select()
     .leftJoinAndSelect('team.players','player')
@@ -83,10 +69,6 @@ export class TeamService {
     .getMany()
 
   }
-
-
-
-
 
   async getBlobServiceInstance(): Promise<BlobServiceClient> { 
     const connectionString = this.configService.get('CONNECTION_STRING'); 
@@ -100,7 +82,7 @@ export class TeamService {
     const containerClient = blobService.getContainerClient(containerName); 
     const blockBlobClient = containerClient.getBlockBlobClient(imageName); 
     return blockBlobClient; 
-} 
+ } 
 
   async  uploadFile(file: Express.Multer.File, containerName: string):Promise<string> { 
     this.containerName = containerName; 
@@ -111,9 +93,7 @@ export class TeamService {
     await blockBlobClient.uploadData(file.buffer);
     console.log(blockBlobClient) 
     return fileUrl; 
-} 
-
-
+ } 
 
   async saveUrl(createTeam: CreateTeamDto,file_url: string):Promise<void> { 
     const league = new League()
@@ -125,12 +105,9 @@ export class TeamService {
     await this.teamRepository.save(team); 
   } 
 
-
-
   async deleteTeam(id: number, containerName: string):Promise<void> {
     let getFile ='';
     const findTeam = await this.teamRepository.findOne({ where: { id } });
-
     const file_image = findTeam?.logoTeam
     if(file_image){
       getFile = file_image.split('/').pop()
@@ -145,11 +122,7 @@ export class TeamService {
     await this.teamRepository.delete(id)
   }
 
-
-
   async uploadLogoTeam(upload:string,id: number){
     await this.teamRepository.update(id,{logoTeam:upload})
   }
-
-
 }

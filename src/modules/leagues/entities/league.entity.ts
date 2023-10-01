@@ -1,6 +1,5 @@
 
 import { SheduleMatch } from "src/modules/shedule-matchs/entities/shedule-match.entity";
-import { Sport } from "src/modules/sports/entities/sport.entity";
 import { Team } from "src/modules/teams/entities/team.entity";
 import { User } from "src/modules/users/entities/user.entity";
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
@@ -22,9 +21,6 @@ export class League {
     @Column()
     level: string 
     
-    @OneToMany(() => Sport, (sport) => sport.league)
-    sports: Sport[]
-
     @ManyToOne(() => User , user => user.league)
     createdBy: User;
 

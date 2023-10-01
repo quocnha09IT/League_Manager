@@ -12,7 +12,6 @@ export class UserService {
     private userRepository:UserRepository,
   ){}
  
-
   async getUser() : Promise<User[]>{
     const user =  await this.userRepository.find({where:{roles: 'user'}});
     return user;
@@ -25,7 +24,6 @@ export class UserService {
   async search(key: string):Promise<User[]>{
     return await this.userRepository.find({where:{name: Like(`%${key}%`)}})
   }
-
 
   async createUser(createUserDto: CreateUserDto):Promise<User[]|any>{
     return await this.userRepository.save(createUserDto);
