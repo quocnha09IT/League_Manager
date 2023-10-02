@@ -23,7 +23,6 @@ export class UserInfoMatchService{
       return await this.userInfoMatchRepository.delete(id);
     }
 
-
     async updateUserInfoMatch(id: number,userInfoMatchDto: UserInfoMatchDto){
       return await this.userInfoMatchRepository.update(id,userInfoMatchDto)
     }

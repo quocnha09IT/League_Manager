@@ -12,7 +12,6 @@ export function Roles (...roles: Role[]){
         
     )
 }
-
 export const User = createParamDecorator(
     (data: unknown, context: ExecutionContext) => {
       
@@ -21,13 +20,3 @@ export const User = createParamDecorator(
       return user;
     },
   );
-
-  // export const player = createParamDecorator(
-  //   (data: unknown, context: ExecutionContext) => {
-      
-  //     const request = context.switchToHttp().getRequest();
-  //     const user = request.user.id;
-  //     return user;
-  //   },
-  // )
-

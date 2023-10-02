@@ -15,7 +15,6 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('league', app, document);
-  
   await app.listen(3232);
 }
 bootstrap();

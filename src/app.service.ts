@@ -13,12 +13,11 @@ import { StandingService } from './modules/standings/standing.service';
 import { LeagueService } from './modules/leagues/league.service';
 import { PlayerService } from './modules/players/player.service';
 import { BlobServiceClient, BlockBlobClient } from '@azure/storage-blob';
+import { Team } from './modules/teams/entities/team.entity';
 
 
 @Injectable()
 export class AppService {
-
-  
   private formattedToday: string;
   constructor(@InjectRepository(SheduleMatch)
   private sheduleRepository: Repository<SheduleMatch>,
@@ -27,7 +26,6 @@ export class AppService {
   private standingService: StandingService,
   private leagueService: LeagueService,
   private playerService: PlayerService,
-
   )
   {
     this.formattedToday = this.getFormattedTodayDate(); 
@@ -39,8 +37,6 @@ export class AppService {
     return formattedToday;
   }
 
-  
-
   async GetAllData(){
     const league = await this.leagueService.getLeague();
     const schedule = await this.sheduleRepository.find();
@@ -50,8 +46,6 @@ export class AppService {
 
   }
 
-
-  
   async findSheduleToday() :Promise<SheduleMatch[]>{ 
     const scheduleMatch = await this.sheduleRepository.find({
       where:{
@@ -61,11 +55,8 @@ export class AppService {
         matchvenue:"DESC",
       }
     });
-    return scheduleMatch;
-   
+    return scheduleMatch;   
    }
-
-  
 
    async getShedule(date: string){
     const scheduleMatch = await this.sheduleRepository.find({where:{date: date}});
@@ -76,47 +67,24 @@ export class AppService {
     return await this.userService.getUser();
    }
 
-
    async getSheduleMatch(tomorrow: Date){
     const nextSchedule = await this.sheduleRepository.find({where: {date : tomorrow}})
     return nextSchedule; 
     
    }
 
-
-   async getTeam(teamId: number){
+   async getTeam(teamId: number):Promise<Team[]>{
     return await this.teamService.findTeam(teamId)
    }
-
 
    async search(key: string){
     const schedule = await this.sheduleRepository.createQueryBuilder().select()
     .where('matchvenue ILIKE :searchQuery', { searchQuery: `%${key}%` })
     .orderBy('matchvenue', 'DESC')
     .getMany();
-
     const team = await this.teamService.searchTeam(key)
     const player = await this.playerService.findPlayer(key)
     const league = await this.leagueService.findLeague(key)
-
     return  {schedule,team,player,league}
    }
-
-
-
-  //  azureConnection = "DefaultEndpointsProtocol=https;AccountName=pbl6;AccountKey=xtw43ZLKyhPH+7MowCusDbarc0e8C8yH7TC9fd+EDmQBf0m4tNw113IfYvjcWa/9606g5FXEdkUI+AStaX7tog==;EndpointSuffix=core.windows.net";
-  //  containerName = "demo1";
-  //   getBlobClient(imageName:string):BlockBlobClient{
-  //    const blobClientService = BlobServiceClient.fromConnectionString(this.azureConnection);
-  //    const containerClient = blobClientService.getContainerClient(this.containerName);
-  //    const blobClient = containerClient.getBlockBlobClient(imageName);
-  //    return blobClient;
-  //  }
-
-  //  async upload(file:Express.Multer.File){
-  //   const blobClient = this.getBlobClient(file.originalname);
-  //    await blobClient.uploadData(file.buffer);
-  // }
-
-
   }

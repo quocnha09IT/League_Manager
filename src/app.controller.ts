@@ -2,7 +2,7 @@ import * as cron from 'node-cron';
 import * as nodemailer from 'nodemailer';
 import { AppService } from './app.service';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiQuery, ApiResponse } from '@nestjs/swagger';
-import { Controller,Post, Get, Query, UseInterceptors, UploadedFile} from '@nestjs/common';
+import { Controller,Post, Get, Query, UseInterceptors, UploadedFile, HttpCode, HttpStatus} from '@nestjs/common';
 import { map, takeUntil } from 'rxjs/operators';
 import { MailerService } from '@nestjs-modules/mailer';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -11,22 +11,14 @@ import { FileInterceptor } from '@nestjs/platform-express';
 export class AppController {
   constructor(private readonly appService: AppService,
     private mailService : MailerService,
-
-    ) {}
+    ){}
 
   getTodayDateTime() {
     return this.appService.getFormattedTodayDate();
   }
 
-  // @Post('upload')
-  // @UseInterceptors(FileInterceptor('file'))
-  // async upload(@UploadedFile() file: Express.Multer.File):Promise<string>{
-  //   await this.appService.upload(file);
-  //   return "uploaded";
-  // }
-
-
   @Get('HomePage')
+  @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({summary:'get all api to home page '})
   async GetAllData(){
     return await this.appService.GetAllData()
@@ -34,18 +26,7 @@ export class AppController {
 
   @Get('')
   @ApiOperation({summary:'get all the shedule match today '})
-  @ApiResponse({
-    status: 201,
-    description: 'save....'
-  })
-  @ApiResponse({
-    status: 403,
-    description: 'Fobiden....'
-  })
-  @ApiResponse({
-    status: 500,
-    description: 'Internal server error....'
-  })
+  @HttpCode(HttpStatus.NO_CONTENT)
   findSheduleToday() {
     return this.appService.findSheduleToday();
   }
@@ -53,7 +34,6 @@ export class AppController {
   @Get('mail')
   @ApiOperation({summary:'send mail to user'})
   async sendMail(){
-    
      cron.schedule('40 16 * * *', async () =>{ const user =  await this.appService.getUser()
      const emails = user.map((user) => user.email);  
      const names = user.map((user) => user.name); 
@@ -90,22 +70,15 @@ export class AppController {
       `
     });
      }
-   });
-    
+   });  
   }
-
 
   @Get('search')
   @ApiOperation({summary:'search'})
+  @HttpCode(HttpStatus.NO_CONTENT)
    async search(@Query('key') key : string){
     return await this.appService.search(key);
    }
-
-
-
-   
-
-
 
   @Get('date')
   @ApiOperation({summary:'the shedule match'})
@@ -115,18 +88,7 @@ export class AppController {
     description: 'enter date in the format YYYY-MM-DD',
     required: true
   })
-  @ApiResponse({
-    status: 201,
-    description: 'save....'
-  })
-  @ApiResponse({
-    status: 403,
-    description: 'Fobiden....'
-  })
-  @ApiResponse({
-    status: 500,
-    description: 'Internal server error....'
-  })
+  @HttpCode(HttpStatus.NO_CONTENT)
   async getShedule(@Query('date') date: string){
     return this.appService.getShedule(date);
   }

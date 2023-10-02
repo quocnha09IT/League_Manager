@@ -1,6 +1,9 @@
 import { ApiProperty } from "@nestjs/swagger";
+import { IsNumber } from "class-validator";
 
 export class UpdateTeamIdsDto{
+    
     @ApiProperty()
+    @IsNumber()
     teamId?:number
 }
